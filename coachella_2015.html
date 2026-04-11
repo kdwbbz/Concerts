@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Coachella 2015 · Live Schedule</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,400;0,600;0,700;0,800;0,900;1,700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#0A1C10;--accent:#72E295;--block-bg:rgba(114,226,149,0.1);--block-hover:rgba(114,226,149,0.2);--block-border:rgba(114,226,149,0.18);--time-col:rgba(114,226,149,0.65);--stage-bar-bg:#0B2014;--day-banner:#081508;--modal-bg:#0D2415;}
+html{font-family:'Barlow Condensed',sans-serif;background:var(--bg);color:#fff;min-height:100vh}
+
+/* ── Year nav ── */
+#year-nav{
+  position:sticky;top:0;z-index:300;
+  background:rgba(0,0,0,0.65);backdrop-filter:blur(10px);
+  padding:7px 18px;display:flex;align-items:center;gap:8px;
+  border-bottom:1px solid rgba(255,255,255,0.07);
+}
+.ynl{font-size:9px;font-weight:700;letter-spacing:0.22em;text-transform:uppercase;color:rgba(255,255,255,0.3);margin-right:4px;}
+.yb{font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;padding:4px 16px;border-radius:20px;border:1px solid rgba(255,255,255,0.2);background:transparent;color:rgba(255,255,255,0.4);cursor:pointer;text-decoration:none;transition:all 0.15s;display:inline-block;}
+.yb:hover{color:rgba(255,255,255,0.9);border-color:rgba(255,255,255,0.5);}
+.yb.active{background:var(--accent);color:#111;border-color:var(--accent);}
+.ync{font-size:9px;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;color:rgba(255,255,255,0.18);margin-left:auto;}
+.day-nav{margin-left:16px;display:flex;gap:6px;}
+.dnb{font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;padding:3px 12px;border-radius:16px;border:1px solid rgba(255,255,255,0.15);background:transparent;color:rgba(255,255,255,0.35);cursor:pointer;text-decoration:none;transition:all 0.15s;display:inline-block;}
+.dnb:hover{color:rgba(255,255,255,0.75);border-color:rgba(255,255,255,0.35);}
+
+/* ── Hero ── */
+.hero{padding:36px 20px 28px;text-align:center;border-bottom:1px solid rgba(255,255,255,0.06);}
+.hero-label{font-size:10px;font-weight:700;letter-spacing:0.4em;text-transform:uppercase;opacity:0.4;margin-bottom:10px;}
+.hero-title{font-size:64px;font-weight:900;letter-spacing:0.06em;line-height:0.95;text-transform:uppercase;color:var(--accent);}
+.hero-sub{font-size:12px;font-weight:600;letter-spacing:0.28em;text-transform:uppercase;opacity:0.35;margin-top:10px;}
+
+/* ── Day section ── */
+.day-section{margin-bottom:4px;}
+.day-banner{
+  background:var(--day-banner);padding:14px 20px 12px;
+  display:flex;align-items:center;gap:16px;
+  border-top:2px solid var(--accent);
+}
+.day-name{font-size:48px;font-weight:900;letter-spacing:0.08em;line-height:1;color:var(--accent);}
+
+/* ── Stage bar ── */
+.stage-bar{
+  display:grid;grid-template-columns:54px repeat(6,1fr);
+  background:var(--stage-bar-bg);border-bottom:1px solid rgba(255,255,255,0.08);
+  position:sticky;top:37px;z-index:200;
+}
+.time-ph{}
+.sh{
+  font-size:9px;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;
+  color:var(--accent);padding:7px 8px;text-align:center;
+  border-left:1px solid rgba(255,255,255,0.06);
+}
+
+/* ── Schedule grid ── */
+.sched-grid{
+  display:grid;
+  grid-template-columns:54px repeat(6,1fr);
+  grid-template-rows:repeat(96,14px);
+  position:relative;
+}
+
+/* ── Hour labels ── */
+.hl{
+  font-size:9px;font-weight:700;letter-spacing:0.04em;
+  color:var(--time-col);padding-top:1px;padding-left:4px;
+  display:flex;align-items:flex-start;gap:2px;white-space:nowrap;
+}
+.hl em{font-size:7px;font-style:normal;opacity:0.7;margin-top:1px;}
+
+/* ── Hour lines ── */
+.hline{border-top:1px solid rgba(255,255,255,0.05);}
+
+/* ── Act blocks ── */
+.ab{
+  margin:1px;padding:4px 6px;border-radius:5px;
+  background:var(--block-bg);border:1px solid var(--block-border);
+  cursor:pointer;overflow:hidden;
+  transition:background 0.1s,border-color 0.12s,transform 0.1s;
+  display:flex;flex-direction:column;justify-content:flex-start;
+}
+.ab:hover{background:var(--block-hover);border-color:var(--accent);transform:scale(1.01);z-index:10;}
+.ab-name{font-size:12px;font-weight:800;line-height:1.1;color:#fff;margin-bottom:2px;}
+.ab-time{font-size:8px;font-weight:600;letter-spacing:0.05em;color:var(--time-col);opacity:0.8;}
+
+/* ── Modal ── */
+#modal-overlay{
+  display:none;position:fixed;inset:0;z-index:500;
+  background:rgba(0,0,0,0.6);backdrop-filter:blur(4px);
+  align-items:center;justify-content:center;
+}
+#modal-overlay.open{display:flex;}
+#modal-card{
+  background:var(--modal-bg);border:1px solid var(--accent);
+  border-radius:12px;width:300px;max-width:90vw;overflow:hidden;
+  box-shadow:0 20px 60px rgba(0,0,0,0.5);
+}
+.mc-header{padding:20px 20px 14px;}
+.mc-day-stage{font-size:9px;font-weight:700;letter-spacing:0.22em;text-transform:uppercase;color:var(--accent);opacity:0.8;margin-bottom:6px;}
+.mc-artist{font-size:26px;font-weight:900;line-height:1.05;}
+.mc-time{font-size:11px;font-weight:600;letter-spacing:0.08em;color:var(--accent);margin-top:6px;opacity:0.7;}
+.mc-divider{height:1px;background:rgba(255,255,255,0.08);margin:0 20px;}
+.mc-btns{padding:14px 20px 18px;display:flex;gap:8px;}
+.mc-close{
+  position:absolute;top:14px;right:14px;
+  background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);
+  color:#fff;font-size:12px;width:26px;height:26px;border-radius:50%;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
+  font-family:sans-serif;transition:all 0.12s;
+}
+.mc-close:hover{background:rgba(255,255,255,0.2);}
+.mc-header{position:relative;}
+.sl-btn{
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:10px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;
+  padding:8px 12px;border-radius:20px;text-decoration:none;flex:1;text-align:center;
+  background:var(--accent);color:#111;border:none;cursor:pointer;
+  transition:opacity 0.12s;
+}
+.sl-btn:hover{opacity:0.85;}
+.sl-btn.secondary{
+  background:transparent;border:1px solid var(--accent);color:var(--accent);
+}
+.mc-no-setlist{font-size:11px;opacity:0.4;padding:14px 20px 18px;font-style:italic;}
+</style>
+</head>
+<body>
+
+<div id="year-nav">
+  <span class="ynl">Coachella</span>
+  <a class="yb active" href="./coachella_2015.html">2015</a>
+  <a class="yb" href="./coachella_2016.html">2016</a>
+  <a class="yb" href="./Coachella 2026 · Weekend One · Full Schedule.html">2026</a>
+  <div class="day-nav">
+    <a class="dnb" href="#friday">Fri</a>
+    <a class="dnb" href="#saturday">Sat</a>
+    <a class="dnb" href="#sunday">Sun</a>
+  </div>
+  <span class="ync">Live Setlists</span>
+</div>
+
+<div class="hero">
+  <div class="hero-label">Coachella Valley Music &amp; Arts Festival</div>
+  <div class="hero-title">2015</div>
+  <div class="hero-sub">Weekend 1 &amp; Weekend 2 · Click any act for setlists</div>
+</div>
+
+<section class="day-section friday" id="friday">
+  <div class="day-banner"><span class="day-name">FRIDAY</span></div>
+  <div class="stage-bar"><div class="time-ph"></div><div class="sh">Coachella Stage</div><div class="sh">Outdoor Theatre</div><div class="sh">Gobi</div><div class="sh">Mojave</div><div class="sh">Sahara</div><div class="sh">Yuma</div></div>
+  <div class="sched-grid">
+    <div class="hl" style="grid-column:1;grid-row:1">11<em>AM</em></div>
+<div class="hl" style="grid-column:1;grid-row:7">12<em>PM</em></div>
+<div class="hl" style="grid-column:1;grid-row:13">1<em>PM</em></div>
+<div class="hl" style="grid-column:1;grid-row:19">2<em>PM</em></div>
+<div class="hl" style="grid-column:1;grid-row:25">3<em>PM</em></div>
+<div class="hl" style="grid-column:1;grid-row:31">4<em>PM</em></div>
+<div class="hl" style="grid-column:1;grid-row:37">5<em>PM</em></div>
+<div class="hl" style="grid-column:1;grid-row:43">6<em>PM</em></div>
+<div class="hl" style="grid-column:1;grid-row:49">7<em>PM</em></div>
+<div class="hl" style="grid-column:1;grid-row:55">8<em>PM</em></div>
+<div class="hl" style="grid-column:1;grid-row:61">9<em>PM</em></div>
+<div class="hl" style="grid-column:1;grid-row:67">10<em>PM</em></div>
+<div class="hl" style="grid-column:1;grid-row:73">11<em>PM</em></div>
+<div class="hl" style="grid-column:1;grid-row:79">12<em>AM</em></div>
+<div class="hl" style="grid-column:1;grid-row:85">1<em>AM</em></div>
+    <div class="hline" style="grid-column:2;grid-row:1/2"></div>
+<div class="hline" style="grid-column:3;grid-row:1/2"></div>
+<div class="hline" style="grid-column:4;grid-row:1/2"></div>
+<div class="hline" style="grid-column:5;grid-row:1/2"></div>
+<div class="hline" style="grid-column:6;grid-row:1/2"></div>
+<div class="hline" style="grid-column:7;grid-row:1/2"></div>
+<div class="hline" style="grid-column:2;grid-row:7/8"></div>
+<div class="hline" style="grid-column:3;grid-row:7/8"></div>
+<div class="hline" style="grid-column:4;grid-row:7/8"></div>
+<div class="hline" style="grid-column:5;grid-row:7/8"></div>
+<div class="hline" style="grid-column:6;grid-row:7/8"></div>
+<div class="hline" style="grid-column:7;grid-row:7/8"></div>
+<div class="hline" style="grid-column:2;grid-row:13/14"></div>
+<div class="hline" style="grid-column:3;grid-row:13/14"></div>
+<div class="hline" style="grid-column:4;grid-row:13/14"></div>
+<div class="hline" style="grid-column:5;grid-row:13/14"></div>
+<div class="hline" style="grid-column:6;grid-row:13/14"></div>
+<div class="hline" style="grid-column:7;grid-row:13/14"></div>
+<div class="hline" style="grid-column:2;grid-row:19/20"></div>
+<div class="hline" style="grid-column:3;grid-row:19/20"></div>
+<div class="hline" style="grid-column:4;grid-row:19/20"></div>
+<div class="hline" style="grid-column:5;grid-row:19/20"></div>
+<div class="hline" style="grid-column:6;grid-row:19/20"></div>
+<div class="hline" style="grid-column:7;grid-row:19/20"></div>
+<div class="hline" style="grid-column:2;grid-row:25/26"></div>
+<div class="hline" style="grid-column:3;grid-row:25/26"></div>
+<div class="hline" style="grid-column:4;grid-row:25/26"></div>
+<div class="hline" style="grid-column:5;grid-row:25/26"></div>
+<div class="hline" style="grid-column:6;grid-row:25/26"></div>
+<div class="hline" style="grid-column:7;grid-row:25/26"></div>
+<div class="hline" style="grid-column:2;grid-row:31/32"></div>
+<div class="hline" style="grid-column:3;grid-row:31/32"></div>
+<div class="hline" style="grid-column:4;grid-row:31/32"></div>
+<div class="hline" style="grid-column:5;grid-row:31/32"></div>
+<div class="hline" style="grid-column:6;grid-row:31/32"></div>
+<div class="hline" style="grid-column:7;grid-row:31/32"></div>
+<div class="hline" style="grid-column:2;grid-row:37/38"></div>
+<div class="hline" style="grid-column:3;grid-row:37/38"></div>
+<div class="hline" style="grid-column:4;grid-row:37/38"></div>
+<div class="hline" style="grid-column:5;grid-row:37/38"></div>
+<div class="hline" style="grid-column:6;grid-row:37/38"></div>
+<div class="hline" style="grid-column:7;grid-row:37/38"></div>
+<div class="hline" style="grid-column:2;grid-row:43/44"></div>
+<div class="hline" style="grid-column:3;grid-row:43/44"></div>
+<div class="hline" style="grid-column:4;grid-row:43/44"></div>
+<div class="hline" style="grid-column:5;grid-row:43/44"></div>
+<div class="hline" style="grid-column:6;grid-row:43/44"></div>
+<div class="hline" style="grid-column:7;grid-row:43/44"></div>
+<div class="hline" style="grid-column:2;grid-row:49/50"></div>
+<div class="hline" style="grid-column:3;grid-row:49/50"></div>
+<div class="hline" style="grid-column:4;grid-row:49/50"></div>
+<div class="hline" style="grid-column:5;grid-row:49/50"></div>
+<div class="hline" style="grid-column:6;grid-row:49/50"></div>
+<div class="hline" style="grid-column:7;grid-row:49/50"></div>
+<div class="hline" style="grid-column:2;grid-row:55/56"></div>
+<div class="hline" style="grid-column:3;grid-row:55/56"></div>
+<div class="hline" style="grid-column:4;grid-row:55/56"></div>
+<div class="hline" style="grid-column:5;grid-row:55/56"></div>
+<div class="hline" style="grid-column:6;grid-row:55/56"></div>
+<div class="hline" style="grid-column:7;grid-row:55/56"></div>
+<div class="hline" style="grid-column:2;grid-row:61/62"></div>
+<div class="hline" style="grid-column:3;grid-row:61/62"></div>
+<div class="hline" style="grid-column:4;grid-row:61/62"></div>
+<div class="hline" style="grid-column:5;grid-row:61/62"></div>
+<div class="hline" style="grid-column:6;grid-row:61/62"></div>
+<div class="hline" style="grid-column:7;grid-row:61/62"></div>
+<div class="hline" style="grid-column:2;grid-row:67/68"></div>
+<div class="hline" style="grid-column:3;grid-row:67/68"></div>
+<div class="hline" style="grid-column:4;grid-row:67/68"></div>
+<div class="hline" style="grid-column:5;grid-row:67/68"></div>
+<div class="hline" style="grid-column:6;grid-row:67/68"></div>
+<div class="hline" style="grid-column:7;grid-row:67/68"></div>
+<div class="hline" style="grid-column:2;grid-row:73/74"></div>
+<div class="hline" style="grid-column:3;grid-row:73/74"></div>
+<div class="hline" style="grid-column:4;grid-row:73/74"></div>
+<div class="hline" style="grid-column:5;grid-row:73/74"></div>
+<div class="hline" style="grid-column:6;grid-row:73/74"></div>
+<div class="hline" style="grid-column:7;grid-row:73/74"></div>
+<div class="hline" style="grid-column:2;grid-row:79/80"></div>
+<div class="hline" style="grid-column:3;grid-row:79/80"></div>
+<div class="hline" style="grid-column:4;grid-row:79/80"></div>
+<div class="hline" style="grid-column:5;grid-row:79/80"></div>
+<div class="hline" style="grid-column:6;grid-row:79/80"></div>
+<div class="hline" style="grid-column:7;grid-row:79/80"></div>
+<div class="hline" style="grid-column:2;grid-row:85/86"></div>
+<div class="hline" style="grid-column:3;grid-row:85/86"></div>
+<div class="hline" style="grid-column:4;grid-row:85/86"></div>
+<div class="hline" style="grid-column:5;grid-row:85/86"></div>
+<div class="hline" style="grid-column:6;grid-row:85/86"></div>
+<div class="hline" style="grid-column:7;grid-row:85/86"></div>
+    <div class="ab" style="grid-column:2;grid-row:70/79" data-a="AC/DC" data-s="Coachella Stage" data-t="10:35 PM" data-d="Friday" data-w1="https://www.setlist.fm/setlist/acdc/2015/empire-polo-club-indio-ca-usa-3c8b18f.html" data-w2="https://www.setlist.fm/setlist/acdc/2015/empire-polo-club-indio-ca-usa-53c88b5d.html"><span class="ab-name">AC/DC</span><span class="ab-time">10:35 PM</span></div><div class="ab" style="grid-column:2;grid-row:62/67" data-a="Tame Impala" data-s="Coachella Stage" data-t="9:15 PM – 10:05 PM" data-d="Friday" data-w1="https://www.setlist.fm/setlist/tame-impala/2015/empire-polo-club-indio-ca-usa-3bc8b07c.html" data-w2="https://www.setlist.fm/setlist/tame-impala/2015/empire-polo-club-indio-ca-usa-53c88b95.html"><span class="ab-name">Tame Impala</span><span class="ab-time">9:15 PM – 10:05 PM</span></div><div class="ab" style="grid-column:2;grid-row:51/56" data-a="Interpol" data-s="Coachella Stage" data-t="7:25 PM – 8:15 PM" data-d="Friday" data-w1="https://www.setlist.fm/setlist/interpol/2015/empire-polo-club-indio-ca-usa-2bc8b072.html" data-w2="https://www.setlist.fm/setlist/interpol/2015/empire-polo-club-indio-ca-usa-5bc88b90.html"><span class="ab-name">Interpol</span><span class="ab-time">7:25 PM – 8:15 PM</span></div><div class="ab" style="grid-column:2;grid-row:44/49" data-a="The War on Drugs" data-s="Coachella Stage" data-t="6:10 PM – 7:00 PM" data-d="Friday" data-w1="https://www.setlist.fm/setlist/the-war-on-drugs/2015/empire-polo-club-indio-ca-usa-6bc8b20a.html" data-w2="https://www.setlist.fm/setlist/the-war-on-drugs/2015/empire-polo-club-indio-ca-usa-3bc80800.html"><span class="ab-name">The War on Drugs</span><span class="ab-time">6:10 PM – 7:00 PM</span></div><div class="ab" style="grid-column:2;grid-row:37/41" data-a="Azealia Banks" data-s="Coachella Stage" data-t="5:00 PM – 5:45 PM" data-d="Friday" data-w1="https://www.setlist.fm/setlist/azealia-banks/2015/empire-polo-club-indio-ca-usa-23c8b06f.html" data-w2="https://www.setlist.fm/setlist/azealia-banks/2015/empire-polo-club-indio-ca-usa-53c88b85.html"><span class="ab-name">Azealia Banks</span><span class="ab-time">5:00 PM – 5:45 PM</span></div><div class="ab" style="grid-column:2;grid-row:29/34" data-a="Charles Bradley and His Extraordinaires" data-s="Coachella Stage" data-t="3:45 PM – 4:35 PM" data-d="Friday" data-w1="https://www.setlist.fm/setlist/charles-bradley/2015/empire-polo-club-indio-ca-usa-33c88c81.html" data-w2="https://www.setlist.fm/setlist/charles-bradley/2015/empire-polo-club-indio-ca-usa-3bf1e89c.html"><span class="ab-name">Charles Bradley and His Extraordinaires</span><span class="ab-time">3:45 PM – 4:35 PM</span></div><div class="ab" style="grid-column:2;grid-row:22/27" data-a="Action Bronson" data-s="Coachella Stage" data-t="2:30 PM – 3:20 PM" data-d="Friday" data-w1="https://www.setlist.fm/setlist/action-bronson/2015/empire-polo-club-indio-ca-usa-7bc8b208.html" data-w2=""><span class="ab-name">Action Bronson</span><span class="ab-time">2:30 PM – 3:20 PM</span></div><div class="ab" style="grid-column:2;grid-row:15/19" data-a="Vic Mensa" data-s="Coachella Stage" data-t="1:20 PM – 2:05 PM" data-d="Friday" data-w1="https://www.setlist.fm/setlist/vic-mensa/2015/empire-polo-club-indio-ca-usa-63c8b20f.html" data-w2="https://www.setlist.fm/setlist/vic-mensa/2015/empire-polo-club-indio-ca-usa-53c88b89.html"><span class="ab-name">Vic Mensa</span><span class="ab-time">1:20 PM – 2:05 PM</span></div><div class="ab" style="grid-column:3;grid-row:64/73" data-a="Nero" data-s="Outdoor Theatre" data-t="9:35 PM" data-d="Friday" data-w1="https://www.setlist.fm/setlist/nero/2015/empire-polo-club-indio-ca-usa-23c8b06b.html" data-w2="https://www.setlist.fm/setlist/nero/2015/empire-polo-club-indio-ca-usa-23c8fc03.html"><span class="ab-name">Nero</span><span class="ab-time">9:35 PM</span></div><div class="ab" style="grid-column:3;grid-row:56/62" data-a="Steely Dan" data-s="Outdoor Theatre" data-t="8:15 PM – 9:15 PM" data-d="Friday" data-w1="https://www.setlist.fm/setlist/steely-dan/2015/empire-polo-club-indio-ca-usa-33c8b071.html" data-w2="https://www.setlist.fm/setlist/steely-dan/2015/empire-polo-club-indio-ca-usa-4bc88b8e.html"><span class="ab-name">Steely Dan</span><span class="ab-time">8:15 PM – 9:15 PM</span></div><div class="ab" style="grid-column:3;grid-row:49/54" data-a="Alabama Shakes" data-s="Outdoor Theatre" data-t="7:00 PM – 7:50 PM" data-d="Friday" data-w1="https://www.setlist.fm/setlist/alabama-shakes/2015/empire-polo-club-indio-ca-usa-2bc8b076.html" data-w2="https://www.setlist.fm/setlist/alabama-shakes/2015/empire-polo-club-indio-ca-usa-53c88b99.html"><span class="ab-name">Alabama Shakes</span><span class="ab-time">7:00 PM – 7:50 PM</span></div><div class="ab" style="grid-column:3;grid-row:41/46" data-a="Raekwon and Ghostface Killah" data-s="Outdoor Theatre" data-t="5:45 PM – 6:35 PM" data-d="Friday" data-w1="" data-w2=""><span class="ab-name">Raekwon and Ghostface Killah</span><span class="ab-time">5:45 PM – 6:35 PM</span></div><div class="ab" style="grid-column:3;grid-row:33/38" data-a="Angus & Julia Stone" data-s="Outdoor Theatre" data-t="4:25 PM – 5:15 PM" data-d="Friday" data-w1="https://www.setlist.fm/setlist/angus-and-julia-stone/2015/empire-polo-club-indio-ca-usa-6bc8b20e.html" data-w2="https://www.setlist.fm/setlist/angus-and-julia-stone/2015/empire-polo-club-indio-ca-usa-5bc88b98.html"><span class="ab-name">Angus & Julia Stone</span><span class="ab-time">4:25 PM – 5:15 PM</span></div><div class="ab" style="grid-column:3;grid-row:26/31" data-a="Lil B" data-s="Outdoor Theatre" data-t="3:10 PM – 4:00 PM" data-d="Friday" data-w1="https://www.setlist.fm/setlist/lil-b/2015/empire-polo-club-indio-ca-usa-4be2afb6.html" data-w2="https://www.setlist.fm/setlist/lil-b/2015/empire-polo-club-indio-ca-usa-5bfd4350.html"><span class="ab-name">Lil B</span><span class="ab-time">3:10 PM – 4:00 PM</span></div><div class="ab" style="grid-column:3;grid-row:20/24" data-a="Allah-Las" data-s="Outdoor Theatre" data-t="2:10 PM – 2:50 PM" data-d="Friday" data-w1="https://www.setlist.fm/setlist/allah-las/2015/empire-polo-club-indio-ca-usa-73c8b20d.html" data-w2="https://www.setlist.fm/setlist/allah-las/2015/empire-polo-club-indio-ca-usa-5bc88b84.html"><span class="ab-name">Allah-Las</span><span class="ab-time">2:10 PM – 2:50 PM</span></div><div class="ab" style="grid-column:3;grid-row:13/17" data-a="Brant Bjork and the Low Desert Punk Band" data-s="Outdoor Theatre" data-t="1:00 PM – 1:40 PM" data-d="Friday" data-w1="https://www.setlist.fm/setlist/brant-bjork/2015/empire-polo-club-indio-ca-usa-73c8a2e5.html" data-w2="https://www.setlist.fm/setlist/brant-bjork/2015/empire-polo-club-indio-ca-usa-4bc88b9e.html"><span class="ab-name">Brant Bjork and the Low Desert Punk Band</span><span class="ab-time">1:00 PM – 1:40 PM</span></div><div class="ab" style="grid-column:3;grid-row:7/11" data-a="The Ghost of a Saber Tooth Tiger" data-s="Outdoor Theatre" data-t="12:00 PM – 12:40 PM" data-d="Friday" data-w1="https://www.setlist.fm/setlist/the-ghost-of-a-saber-tooth-tiger/2015/empire-polo-club-indio-ca-usa-7bc8b20c.html" data-w2="https://www.setlist.fm/setlist/the-ghost-of-a-saber-tooth-tiger/2015/empire-polo-club-indio-ca-usa-43c88b8f.html"><span class="ab-name">The Ghost of a Saber Tooth Tiger</span><span class="ab-time">12:00 PM – 12:40 PM</span></div><div class="ab" style="grid-column:3;grid-row:2/6" data-a="Alchemy" data-s="Outdoor Theatre" data-t="11:15 AM – 11:50 AM" data-d="Friday" data-w1="https://www.setlist.fm/setlist/alchemy/2015/empire-polo-club-indio-ca-usa-5bc8d3f0.html" data-w2=""><span class="ab-name">Alchemy</span><span class="ab-time">11:15 AM – 11:50 AM</span></div><div class="ab" style="grid-column:4;grid-row:72/81" data-a="Squarepusher" data-s="Gobi" data-t="10:50 PM" data-d="Friday" data-w1="https://www.setlist.fm/setlist/squarepusher/2015/empire-polo-club-indio-ca-usa-6bc8b202.html" data-w2="https://www.setlist.fm/setlist/squarepusher/2015/empire-polo-club-indio-ca-usa-2bc9b81a.html"><span class="ab-name">Squarepusher</span><span class="ab-time">10:50 PM</span></div><div class="ab" style="grid-column:4;grid-row:63/68" data-a="Todd Terje and the Olsens" data-s="Gobi" data-t="9:20 PM – 10:15 PM" data-d="Friday" data-w1="https://www.setlist.fm/setlist/todd-terje/2015/empire-polo-club-indio-ca-usa-73c89e0d.html" data-w2="https://www.setlist.fm/setlist/todd-terje/2015/empire-polo-club-indio-ca-usa-2bc8fc0e.html"><span class="ab-name">Todd Terje and the Olsens</span><span class="ab-time">9:20 PM – 10:15 PM</span></div><div class="ab" style="grid-column:4;grid-row:55/60" data-a="Gorgon City" data-s="Gobi" data-t="8:05 PM – 8:50 PM" data-d="Friday" data-w1="https://www.setlist.fm/setlist/gorgon-city/2015/empire-polo-club-indio-ca-usa-33c8b061.html" data-w2="https://www.setlist.fm/setlist/gorgon-city/2015/empire-polo-club-indio-ca-usa-43c8ef2f.html"><span class="ab-name">Gorgon City</span><span class="ab-time">8:05 PM – 8:50 PM</span></div><div class="ab" style="grid-column:4;grid-row:47/52" data-a="Hot Natured" data-s="Gobi" data-t="6:45 PM – 7:35 PM" data-d="Friday" data-w1="https://www.setlist.fm/setlist/hot-natured/2015/empire-polo-club-indio-ca-usa-73c8b201.html" data-w2=""><span class="ab-name">Hot Natured</span><span class="ab-time">6:45 PM – 7:35 PM</span></div><div class="ab" style="grid-column:4;grid-row:39/44" data-a="Ride" data-s="Gobi" data-t="5:25 PM – 6:15 PM" data-d="Friday" data-w1="https://www.setlist.fm/setlist/ride/2015/empire-polo-club-indio-ca-usa-3bc8b074.html" data-w2="https://www.setlist.fm/setlist/ride/2015/empire-polo-club-indio-ca-usa-53c88b0d.html"><span class="ab-name">Ride</span><span class="ab-time">5:25 PM – 6:15 PM</span></div><div class="ab" style="grid-column:4;grid-row:32/37" data-a="Kimbra" data-s="Gobi" data-t="4:15 PM – 5:00 PM" data-d="Friday" data-w1="https://www.setlist.fm/setlist/kimbra/2015/empire-polo-club-indio-ca-usa-7bc8b200.html" data-w2="https://www.setlist.fm/setlist/kimbra/2015/empire-polo-club-indio-ca-usa-4bc88b82.html"><span class="ab-name">Kimbra</span><span class="ab-time">4:15 PM – 5:00 PM</span></div><div class="ab" style="grid-column:4;grid-row:25/30" data-a="Ab-Soul" data-s="Gobi" data-t="3:00 PM – 3:50 PM" data-d="Friday" data-w1="https://www.setlist.fm/setlist/absoul/2015/empire-polo-club-indio-ca-usa-63c8b207.html" data-w2=""><span class="ab-name">Ab-Soul</span><span class="ab-time">3:00 PM – 3:50 PM</span></div><div class="ab" style="grid-column:4;grid-row:18/23" data-a="Cloud Nothings" data-s="Gobi" data-t="1:55 PM – 2:40 PM" data-d="Friday" data-w1="https://www.setlist.fm/setlist/cloud-nothings/2015/empire-polo-club-indio-ca-usa-6bc8b206.html" data-w2="https://www.setlist.fm/setlist/cloud-nothings/2015/empire-polo-club-indio-ca-usa-43c88b93.html"><span class="ab-name">Cloud Nothings</span><span class="ab-time">1:55 PM – 2:40 PM</span></div><div class="ab" style="grid-column:4;grid-row:12/16" data-a="Eagulls" data-s="Gobi" data-t="12:55 PM – 1:35 PM" data-d="Friday" data-w1="https://www.setlist.fm/setlist/eagulls/2015/empire-polo-club-indio-ca-usa-7bc8b204.html" data-w2="https://www.setlist.fm/setlist/eagulls/2015/empire-polo-club-indio-ca-usa-4bc88b92.html"><span class="ab-name">Eagulls</span><span class="ab-time">12:55 PM – 1:35 PM</span></div><div class="ab" style="grid-column:4;grid-row:7/10" data-a="Ruen Brothers" data-s="Gobi" data-t="12:00 PM – 12:35 PM" data-d="Friday" data-w1="https://www.setlist.fm/setlist/ruen-brothers/2015/empire-polo-club-indio-ca-usa-63c8b2fb.html" data-w2="https://www.setlist.fm/setlist/ruen-brothers/2015/empire-polo-club-indio-ca-usa-1bc88510.html"><span class="ab-name">Ruen Brothers</span><span class="ab-time">12:00 PM – 12:35 PM</span></div><div class="ab" style="grid-column:4;grid-row:2/6" data-a="Moustache" data-s="Gobi" data-t="11:15 AM – 11:50 AM" data-d="Friday" data-w1="https://www.setlist.fm/setlist/mo/2015/empire-polo-club-indio-ca-usa-7bc8961c.html" data-w2="https://www.setlist.fm/setlist/mo/2015/empire-polo-club-indio-ca-usa-3bc8e808.html"><span class="ab-name">Moustache</span><span class="ab-time">11:15 AM – 11:50 AM</span></div><div class="ab" style="grid-column:5;grid-row:67/76" data-a="Flying Lotus" data-s="Mojave" data-t="10:00 PM" data-d="Friday" data-w1="https://www.setlist.fm/setlist/flying-lotus/2015/empire-polo-club-indio-ca-usa-23c8b063.html" data-w2="https://www.setlist.fm/setlist/flying-lotus/2015/empire-polo-club-indio-ca-usa-53c88b91.html"><span class="ab-name">Flying Lotus</span><span class="ab-time">10:00 PM</span></div><div class="ab" style="grid-column:5;grid-row:59/64" data-a="Caribou" data-s="Mojave" data-t="8:40 PM – 9:30 PM" data-d="Friday" data-w1="https://www.setlist.fm/setlist/caribou/2015/empire-polo-club-indio-ca-usa-73c8b2f9.html" data-w2="https://www.setlist.fm/setlist/caribou/2015/empire-polo-club-indio-ca-usa-53c88b9d.html"><span class="ab-name">Caribou</span><span class="ab-time">8:40 PM – 9:30 PM</span></div><div class="ab" style="grid-column:5;grid-row:51/56" data-a="Lykke Li" data-s="Mojave" data-t="7:20 PM – 8:10 PM" data-d="Friday" data-w1="https://www.setlist.fm/setlist/lykke-li/2015/empire-polo-club-indio-ca-usa-7bc8b2f8.html" data-w2="https://www.setlist.fm/setlist/lykke-li/2015/empire-polo-club-indio-ca-usa-4bc88b96.html"><span class="ab-name">Lykke Li</span><span class="ab-time">7:20 PM – 8:10 PM</span></div><div class="ab" style="grid-column:5;grid-row:43/48" data-a="Ryan Hemsworth" data-s="Mojave" data-t="6:05 PM – 6:50 PM" data-d="Friday" data-w1="https://www.setlist.fm/setlist/ryan-hemsworth/2015/empire-polo-club-indio-ca-usa-63c8b2ff.html" data-w2=""><span class="ab-name">Ryan Hemsworth</span><span class="ab-time">6:05 PM – 6:50 PM</span></div><div class="ab" style="grid-column:5;grid-row:36/41" data-a="Kiesza" data-s="Mojave" data-t="4:55 PM – 5:40 PM" data-d="Friday" data-w1="https://www.setlist.fm/setlist/kiesza/2015/empire-polo-club-indio-ca-usa-6bc8b2fe.html" data-w2="https://www.setlist.fm/setlist/kiesza/2015/empire-polo-club-indio-ca-usa-5bc88b80.html"><span class="ab-name">Kiesza</span><span class="ab-time">4:55 PM – 5:40 PM</span></div><div class="ab" style="grid-column:5;grid-row:29/34" data-a="Sylvan Esso" data-s="Mojave" data-t="3:40 PM – 4:30 PM" data-d="Friday" data-w1="https://www.setlist.fm/setlist/sylvan-esso/2015/empire-polo-club-indio-ca-usa-7bc8b2fc.html" data-w2="https://www.setlist.fm/setlist/sylvan-esso/2015/empire-polo-club-indio-ca-usa-53c8f7a1.html"><span class="ab-name">Sylvan Esso</span><span class="ab-time">3:40 PM – 4:30 PM</span></div><div class="ab" style="grid-column:5;grid-row:22/26" data-a="George Ezra" data-s="Mojave" data-t="2:35 PM – 3:15 PM" data-d="Friday" data-w1="https://www.setlist.fm/setlist/george-ezra/2015/empire-polo-club-indio-ca-usa-5bc88b48.html" data-w2=""><span class="ab-name">George Ezra</span><span class="ab-time">2:35 PM – 3:15 PM</span></div><div class="ab" style="grid-column:5;grid-row:16/20" data-a="Reverend Horton Heat" data-s="Mojave" data-t="1:30 PM – 2:10 PM" data-d="Friday" data-w1="https://www.setlist.fm/setlist/reverend-horton-heat/2015/empire-polo-club-indio-ca-usa-63c8b2f3.html" data-w2="https://www.setlist.fm/setlist/reverend-horton-heat/2015/empire-polo-club-indio-ca-usa-33c8fc0d.html"><span class="ab-name">Reverend Horton Heat</span><span class="ab-time">1:30 PM – 2:10 PM</span></div><div class="ab" style="grid-column:5;grid-row:10/14" data-a="HAERTS" data-s="Mojave" data-t="12:30 PM – 1:10 PM" data-d="Friday" data-w1="https://www.setlist.fm/setlist/haerts/2015/empire-polo-club-indio-ca-usa-73c8b2f1.html" data-w2="https://www.setlist.fm/setlist/haerts/2015/empire-polo-club-indio-ca-usa-5bc8f708.html"><span class="ab-name">HAERTS</span><span class="ab-time">12:30 PM – 1:10 PM</span></div><div class="ab" style="grid-column:5;grid-row:5/8" data-a="Los Rakas" data-s="Mojave" data-t="11:40 AM – 12:10 PM" data-d="Friday" data-w1="https://www.setlist.fm/setlist/los-rakas/2015/empire-polo-club-indio-ca-usa-63c8b2f7.html" data-w2=""><span class="ab-name">Los Rakas</span><span class="ab-time">11:40 AM – 12:10 PM</span></div><div class="ab" style="grid-column:6;grid-row:76/85" data-a="Alesso" data-s="Sahara" data-t="11:35 PM" data-d="Friday" data-w1="https://www.setlist.fm/setlist/alesso/2015/empire-polo-club-indio-ca-usa-3bc8b070.html" data-w2=""><span class="ab-name">Alesso</span><span class="ab-time">11:35 PM</span></div><div class="ab" style="grid-column:6;grid-row:67/73" data-a="Porter Robinson" data-s="Sahara" data-t="10:00 PM – 11:00 PM" data-d="Friday" data-w1="https://www.setlist.fm/setlist/porter-robinson/2015/empire-polo-club-indio-ca-usa-73c8b2f5.html" data-w2="https://www.setlist.fm/setlist/porter-robinson/2015/empire-polo-club-indio-ca-usa-13c8c599.html"><span class="ab-name">Porter Robinson</span><span class="ab-time">10:00 PM – 11:00 PM</span></div><div class="ab" style="grid-column:6;grid-row:58/64" data-a="DJ Snake" data-s="Sahara" data-t="8:30 PM – 9:30 PM" data-d="Friday" data-w1="https://www.setlist.fm/setlist/dj-snake/2015/empire-polo-club-indio-ca-usa-53ec038d.html" data-w2=""><span class="ab-name">DJ Snake</span><span class="ab-time">8:30 PM – 9:30 PM</span></div><div class="ab" style="grid-column:6;grid-row:50/56" data-a="R3hab" data-s="Sahara" data-t="7:10 PM – 8:10 PM" data-d="Friday" data-w1="https://www.setlist.fm/setlist/r3hab/2015/empire-polo-club-indio-ca-usa-63c8b2eb.html" data-w2=""><span class="ab-name">R3hab</span><span class="ab-time">7:10 PM – 8:10 PM</span></div><div class="ab" style="grid-column:6;grid-row:43/48" data-a="Oliver Heldens" data-s="Sahara" data-t="6:00 PM – 6:55 PM" data-d="Friday" data-w1="https://www.setlist.fm/setlist/oliver-heldens/2015/empire-polo-club-indio-ca-usa-6bc8b2ea.html" data-w2="https://www.setlist.fm/setlist/oliver-heldens/2015/empire-polo-club-indio-ca-usa-53c8ef2d.html"><span class="ab-name">Oliver Heldens</span><span class="ab-time">6:00 PM – 6:55 PM</span></div><div class="ab" style="grid-column:6;grid-row:36/41" data-a="Keys N Krates" data-s="Sahara" data-t="4:50 PM – 5:45 PM" data-d="Friday" data-w1="https://www.setlist.fm/setlist/keys-n-krates/2015/empire-polo-club-indio-ca-usa-73c8b2e9.html" data-w2="https://www.setlist.fm/setlist/keys-n-krates/2015/empire-polo-club-indio-ca-usa-53c8ef35.html"><span class="ab-name">Keys N Krates</span><span class="ab-time">4:50 PM – 5:45 PM</span></div><div class="ab" style="grid-column:6;grid-row:29/34" data-a="Alvin Risk" data-s="Sahara" data-t="3:40 PM – 4:35 PM" data-d="Friday" data-w1="https://www.setlist.fm/setlist/alvin-risk/2015/empire-polo-club-indio-ca-usa-7bc8b2e8.html" data-w2="https://www.setlist.fm/setlist/alvin-risk/2015/empire-polo-club-indio-ca-usa-5bc8ef2c.html"><span class="ab-name">Alvin Risk</span><span class="ab-time">3:40 PM – 4:35 PM</span></div><div class="ab" style="grid-column:6;grid-row:22/28" data-a="Trippy Turtle" data-s="Sahara" data-t="2:30 PM – 3:30 PM" data-d="Friday" data-w1="https://www.setlist.fm/setlist/trippy-turtle/2015/empire-polo-club-indio-ca-usa-63c8b2ef.html" data-w2=""><span class="ab-name">Trippy Turtle</span><span class="ab-time">2:30 PM – 3:30 PM</span></div><div class="ab" style="grid-column:6;grid-row:15/21" data-a="Peking Duk" data-s="Sahara" data-t="1:20 PM – 2:20 PM" data-d="Friday" data-w1="https://www.setlist.fm/setlist/peking-duk/2015/empire-polo-club-indio-ca-usa-6bc8b2ee.html" data-w2="https://www.setlist.fm/setlist/peking-duk/2015/empire-polo-club-indio-ca-usa-3bc8fc00.html"><span class="ab-name">Peking Duk</span><span class="ab-time">1:20 PM – 2:20 PM</span></div><div class="ab" style="grid-column:6;grid-row:4/20" data-a="DJP" data-s="Sahara" data-t="11:30 AM – 2:10 PM" data-d="Friday" data-w1="" data-w2=""><span class="ab-name">DJP</span><span class="ab-time">11:30 AM – 2:10 PM</span></div><div class="ab" style="grid-column:7;grid-row:67/76" data-a="MK" data-s="Yuma" data-t="10:05 PM" data-d="Friday" data-w1="https://www.setlist.fm/setlist/mo/2015/empire-polo-club-indio-ca-usa-7bc8961c.html" data-w2="https://www.setlist.fm/setlist/mo/2015/empire-polo-club-indio-ca-usa-3bc8e808.html"><span class="ab-name">MK</span><span class="ab-time">10:05 PM</span></div><div class="ab" style="grid-column:7;grid-row:58/67" data-a="Chris Malinchak" data-s="Yuma" data-t="8:35 PM – 10:05 PM" data-d="Friday" data-w1="https://www.setlist.fm/setlist/chris-malinchak/2015/empire-polo-club-indio-ca-usa-73c8b2ed.html" data-w2=""><span class="ab-name">Chris Malinchak</span><span class="ab-time">8:35 PM – 10:05 PM</span></div><div class="ab" style="grid-column:7;grid-row:50/58" data-a="Pete Tong" data-s="Yuma" data-t="7:15 PM – 8:35 PM" data-d="Friday" data-w1="https://www.setlist.fm/setlist/pete-tong/2015/empire-polo-club-indio-ca-usa-7bc8b2ec.html" data-w2=""><span class="ab-name">Pete Tong</span><span class="ab-time">7:15 PM – 8:35 PM</span></div><div class="ab" style="grid-column:7;grid-row:43/50" data-a="Jon Hopkins" data-s="Yuma" data-t="6:00 PM – 7:15 PM" data-d="Friday" data-w1="https://www.setlist.fm/setlist/jon-hopkins/2015/empire-polo-club-indio-ca-usa-6bc88a7a.html" data-w2="https://www.setlist.fm/setlist/jon-hopkins/2015/empire-polo-club-indio-ca-usa-43c88b87.html"><span class="ab-name">Jon Hopkins</span><span class="ab-time">6:00 PM – 7:15 PM</span></div><div class="ab" style="grid-column:7;grid-row:35/43" data-a="Erol Alkan" data-s="Yuma" data-t="4:45 PM – 6:00 PM" data-d="Friday" data-w1="https://www.setlist.fm/setlist/erol-alkan/2015/empire-polo-club-indio-ca-usa-63c8b2e3.html" data-w2="https://www.setlist.fm/setlist/erol-alkan/2015/empire-polo-club-indio-ca-usa-4b99674e.html"><span class="ab-name">Erol Alkan</span><span class="ab-time">4:45 PM – 6:00 PM</span></div><div class="ab" style="grid-column:7;grid-row:28/35" data-a="Lee Foss" data-s="Yuma" data-t="3:30 PM – 4:45 PM" data-d="Friday" data-w1="https://www.setlist.fm/setlist/lee-foss/2015/empire-polo-club-indio-ca-usa-73c8b2e1.html" data-w2=""><span class="ab-name">Lee Foss</span><span class="ab-time">3:30 PM – 4:45 PM</span></div><div class="ab" style="grid-column:7;grid-row:20/28" data-a="Marques Wyatt" data-s="Yuma" data-t="2:15 PM – 3:30 PM" data-d="Friday" data-w1="https://www.setlist.fm/setlist/marques-wyatt/2015/empire-polo-club-indio-ca-usa-7bc8b2e0.html" data-w2="https://www.setlist.fm/setlist/marques-wyatt/2015/empire-polo-club-indio-ca-usa-33c8fc01.html"><span class="ab-name">Marques Wyatt</span><span class="ab-time">2:15 PM – 3:30 PM</span></div><div class="ab" style="grid-column:7;grid-row:13/20" data-a="Freddy Be" data-s="Yuma" data-t="1:00 PM – 2:15 PM" data-d="Friday" data-w1="" data-w2=""><span class="ab-name">Freddy Be</span><span class="ab-time">1:00 PM – 2:15 PM</span></div>
+  </div>
+</section>
+<section class="day-section saturday" id="saturday">
+  <div class="day-banner"><span class="day-name">SATURDAY</span></div>
+  <div class="stage-bar"><div class="time-ph"></div><div class="sh">Coachella Stage</div><div class="sh">Outdoor Theatre</div><div class="sh">Gobi</div><div class="sh">Mojave</div><div class="sh">Sahara</div><div class="sh">Yuma</div></div>
+  <div class="sched-grid">
+    <div class="hl" style="grid-column:1;grid-row:1">11<em>AM</em></div>
+<div class="hl" style="grid-column:1;grid-row:7">12<em>PM</em></div>
+<div class="hl" style="grid-column:1;grid-row:13">1<em>PM</em></div>
+<div class="hl" style="grid-column:1;grid-row:19">2<em>PM</em></div>
+<div class="hl" style="grid-column:1;grid-row:25">3<em>PM</em></div>
+<div class="hl" style="grid-column:1;grid-row:31">4<em>PM</em></div>
+<div class="hl" style="grid-column:1;grid-row:37">5<em>PM</em></div>
+<div class="hl" style="grid-column:1;grid-row:43">6<em>PM</em></div>
+<div class="hl" style="grid-column:1;grid-row:49">7<em>PM</em></div>
+<div class="hl" style="grid-column:1;grid-row:55">8<em>PM</em></div>
+<div class="hl" style="grid-column:1;grid-row:61">9<em>PM</em></div>
+<div class="hl" style="grid-column:1;grid-row:67">10<em>PM</em></div>
+<div class="hl" style="grid-column:1;grid-row:73">11<em>PM</em></div>
+<div class="hl" style="grid-column:1;grid-row:79">12<em>AM</em></div>
+<div class="hl" style="grid-column:1;grid-row:85">1<em>AM</em></div>
+    <div class="hline" style="grid-column:2;grid-row:1/2"></div>
+<div class="hline" style="grid-column:3;grid-row:1/2"></div>
+<div class="hline" style="grid-column:4;grid-row:1/2"></div>
+<div class="hline" style="grid-column:5;grid-row:1/2"></div>
+<div class="hline" style="grid-column:6;grid-row:1/2"></div>
+<div class="hline" style="grid-column:7;grid-row:1/2"></div>
+<div class="hline" style="grid-column:2;grid-row:7/8"></div>
+<div class="hline" style="grid-column:3;grid-row:7/8"></div>
+<div class="hline" style="grid-column:4;grid-row:7/8"></div>
+<div class="hline" style="grid-column:5;grid-row:7/8"></div>
+<div class="hline" style="grid-column:6;grid-row:7/8"></div>
+<div class="hline" style="grid-column:7;grid-row:7/8"></div>
+<div class="hline" style="grid-column:2;grid-row:13/14"></div>
+<div class="hline" style="grid-column:3;grid-row:13/14"></div>
+<div class="hline" style="grid-column:4;grid-row:13/14"></div>
+<div class="hline" style="grid-column:5;grid-row:13/14"></div>
+<div class="hline" style="grid-column:6;grid-row:13/14"></div>
+<div class="hline" style="grid-column:7;grid-row:13/14"></div>
+<div class="hline" style="grid-column:2;grid-row:19/20"></div>
+<div class="hline" style="grid-column:3;grid-row:19/20"></div>
+<div class="hline" style="grid-column:4;grid-row:19/20"></div>
+<div class="hline" style="grid-column:5;grid-row:19/20"></div>
+<div class="hline" style="grid-column:6;grid-row:19/20"></div>
+<div class="hline" style="grid-column:7;grid-row:19/20"></div>
+<div class="hline" style="grid-column:2;grid-row:25/26"></div>
+<div class="hline" style="grid-column:3;grid-row:25/26"></div>
+<div class="hline" style="grid-column:4;grid-row:25/26"></div>
+<div class="hline" style="grid-column:5;grid-row:25/26"></div>
+<div class="hline" style="grid-column:6;grid-row:25/26"></div>
+<div class="hline" style="grid-column:7;grid-row:25/26"></div>
+<div class="hline" style="grid-column:2;grid-row:31/32"></div>
+<div class="hline" style="grid-column:3;grid-row:31/32"></div>
+<div class="hline" style="grid-column:4;grid-row:31/32"></div>
+<div class="hline" style="grid-column:5;grid-row:31/32"></div>
+<div class="hline" style="grid-column:6;grid-row:31/32"></div>
+<div class="hline" style="grid-column:7;grid-row:31/32"></div>
+<div class="hline" style="grid-column:2;grid-row:37/38"></div>
+<div class="hline" style="grid-column:3;grid-row:37/38"></div>
+<div class="hline" style="grid-column:4;grid-row:37/38"></div>
+<div class="hline" style="grid-column:5;grid-row:37/38"></div>
+<div class="hline" style="grid-column:6;grid-row:37/38"></div>
+<div class="hline" style="grid-column:7;grid-row:37/38"></div>
+<div class="hline" style="grid-column:2;grid-row:43/44"></div>
+<div class="hline" style="grid-column:3;grid-row:43/44"></div>
+<div class="hline" style="grid-column:4;grid-row:43/44"></div>
+<div class="hline" style="grid-column:5;grid-row:43/44"></div>
+<div class="hline" style="grid-column:6;grid-row:43/44"></div>
+<div class="hline" style="grid-column:7;grid-row:43/44"></div>
+<div class="hline" style="grid-column:2;grid-row:49/50"></div>
+<div class="hline" style="grid-column:3;grid-row:49/50"></div>
+<div class="hline" style="grid-column:4;grid-row:49/50"></div>
+<div class="hline" style="grid-column:5;grid-row:49/50"></div>
+<div class="hline" style="grid-column:6;grid-row:49/50"></div>
+<div class="hline" style="grid-column:7;grid-row:49/50"></div>
+<div class="hline" style="grid-column:2;grid-row:55/56"></div>
+<div class="hline" style="grid-column:3;grid-row:55/56"></div>
+<div class="hline" style="grid-column:4;grid-row:55/56"></div>
+<div class="hline" style="grid-column:5;grid-row:55/56"></div>
+<div class="hline" style="grid-column:6;grid-row:55/56"></div>
+<div class="hline" style="grid-column:7;grid-row:55/56"></div>
+<div class="hline" style="grid-column:2;grid-row:61/62"></div>
+<div class="hline" style="grid-column:3;grid-row:61/62"></div>
+<div class="hline" style="grid-column:4;grid-row:61/62"></div>
+<div class="hline" style="grid-column:5;grid-row:61/62"></div>
+<div class="hline" style="grid-column:6;grid-row:61/62"></div>
+<div class="hline" style="grid-column:7;grid-row:61/62"></div>
+<div class="hline" style="grid-column:2;grid-row:67/68"></div>
+<div class="hline" style="grid-column:3;grid-row:67/68"></div>
+<div class="hline" style="grid-column:4;grid-row:67/68"></div>
+<div class="hline" style="grid-column:5;grid-row:67/68"></div>
+<div class="hline" style="grid-column:6;grid-row:67/68"></div>
+<div class="hline" style="grid-column:7;grid-row:67/68"></div>
+<div class="hline" style="grid-column:2;grid-row:73/74"></div>
+<div class="hline" style="grid-column:3;grid-row:73/74"></div>
+<div class="hline" style="grid-column:4;grid-row:73/74"></div>
+<div class="hline" style="grid-column:5;grid-row:73/74"></div>
+<div class="hline" style="grid-column:6;grid-row:73/74"></div>
+<div class="hline" style="grid-column:7;grid-row:73/74"></div>
+<div class="hline" style="grid-column:2;grid-row:79/80"></div>
+<div class="hline" style="grid-column:3;grid-row:79/80"></div>
+<div class="hline" style="grid-column:4;grid-row:79/80"></div>
+<div class="hline" style="grid-column:5;grid-row:79/80"></div>
+<div class="hline" style="grid-column:6;grid-row:79/80"></div>
+<div class="hline" style="grid-column:7;grid-row:79/80"></div>
+<div class="hline" style="grid-column:2;grid-row:85/86"></div>
+<div class="hline" style="grid-column:3;grid-row:85/86"></div>
+<div class="hline" style="grid-column:4;grid-row:85/86"></div>
+<div class="hline" style="grid-column:5;grid-row:85/86"></div>
+<div class="hline" style="grid-column:6;grid-row:85/86"></div>
+<div class="hline" style="grid-column:7;grid-row:85/86"></div>
+    <div class="ab" style="grid-column:2;grid-row:75/84" data-a="The Weeknd" data-s="Coachella Stage" data-t="11:25 PM" data-d="Saturday" data-w1="https://www.setlist.fm/setlist/the-weeknd/2015/empire-polo-club-indio-ca-usa-13c8a9b1.html" data-w2="https://www.setlist.fm/setlist/the-weeknd/2015/empire-polo-club-indio-ca-usa-3bc8fc18.html"><span class="ab-name">The Weeknd</span><span class="ab-time">11:25 PM</span></div><div class="ab" style="grid-column:2;grid-row:62/73" data-a="Jack White" data-s="Coachella Stage" data-t="9:15 PM – 11:00 PM" data-d="Saturday" data-w1="https://www.setlist.fm/setlist/jack-white/2015/empire-polo-club-indio-ca-usa-1bc8a9b0.html" data-w2="https://www.setlist.fm/setlist/jack-white/2015/empire-polo-club-indio-ca-usa-33c8fc31.html"><span class="ab-name">Jack White</span><span class="ab-time">9:15 PM – 11:00 PM</span></div><div class="ab" style="grid-column:2;grid-row:52/58" data-a="alt-J" data-s="Coachella Stage" data-t="7:30 PM – 8:30 PM" data-d="Saturday" data-w1="https://www.setlist.fm/setlist/altj/2015/empire-polo-club-indio-ca-usa-3c8a9b7.html" data-w2="https://www.setlist.fm/setlist/altj/2015/empire-polo-club-indio-ca-usa-33c80805.html"><span class="ab-name">alt-J</span><span class="ab-time">7:30 PM – 8:30 PM</span></div><div class="ab" style="grid-column:2;grid-row:43/48" data-a="Hozier" data-s="Coachella Stage" data-t="6:00 PM – 6:50 PM" data-d="Saturday" data-w1="https://www.setlist.fm/setlist/hozier/2015/empire-polo-club-indio-ca-usa-63c8a2d7.html" data-w2="https://www.setlist.fm/setlist/hozier/2015/empire-polo-club-indio-ca-usa-33c8f03d.html"><span class="ab-name">Hozier</span><span class="ab-time">6:00 PM – 6:50 PM</span></div><div class="ab" style="grid-column:2;grid-row:35/40" data-a="Milky Chance" data-s="Coachella Stage" data-t="4:40 PM – 5:30 PM" data-d="Saturday" data-w1="https://www.setlist.fm/setlist/milky-chance/2015/empire-polo-club-indio-ca-usa-1bc8a9b4.html" data-w2="https://www.setlist.fm/setlist/milky-chance/2015/empire-polo-club-indio-ca-usa-23c8fc2f.html"><span class="ab-name">Milky Chance</span><span class="ab-time">4:40 PM – 5:30 PM</span></div><div class="ab" style="grid-column:2;grid-row:27/32" data-a="Bad Religion" data-s="Coachella Stage" data-t="3:25 PM – 4:15 PM" data-d="Saturday" data-w1="https://www.setlist.fm/setlist/bad-religion/2015/empire-polo-club-indio-ca-usa-3c8a9ab.html" data-w2="https://www.setlist.fm/setlist/bad-religion/2015/empire-polo-club-indio-ca-usa-3bc8fc40.html"><span class="ab-name">Bad Religion</span><span class="ab-time">3:25 PM – 4:15 PM</span></div><div class="ab" style="grid-column:2;grid-row:20/25" data-a="Clean Bandit" data-s="Coachella Stage" data-t="2:15 PM – 3:00 PM" data-d="Saturday" data-w1="https://www.setlist.fm/setlist/clean-bandit/2015/empire-polo-club-indio-ca-usa-13c8a9a9.html" data-w2="https://www.setlist.fm/setlist/clean-bandit/2015/empire-polo-club-indio-ca-usa-2bc8fc3a.html"><span class="ab-name">Clean Bandit</span><span class="ab-time">2:15 PM – 3:00 PM</span></div><div class="ab" style="grid-column:2;grid-row:13/18" data-a="Nortec Collective Presents: Bostich + Fussible" data-s="Coachella Stage" data-t="1:00 PM – 1:50 PM" data-d="Saturday" data-w1="https://www.setlist.fm/setlist/bostich-fussible/2015/empire-polo-club-indio-ca-usa-bc8c966.html" data-w2=""><span class="ab-name">Nortec Collective Presents: Bostich + Fussible</span><span class="ab-time">1:00 PM – 1:50 PM</span></div><div class="ab" style="grid-column:3;grid-row:78/87" data-a="Axwell ^ Ingrosso" data-s="Outdoor Theatre" data-t="11:55 PM" data-d="Saturday" data-w1="" data-w2=""><span class="ab-name">Axwell ^ Ingrosso</span><span class="ab-time">11:55 PM</span></div><div class="ab" style="grid-column:3;grid-row:70/75" data-a="Flosstradamus" data-s="Outdoor Theatre" data-t="10:30 PM – 11:20 PM" data-d="Saturday" data-w1="https://www.setlist.fm/setlist/flosstradamus/2015/empire-polo-club-indio-ca-usa-13c8a9ad.html" data-w2="https://www.setlist.fm/setlist/flosstradamus/2015/empire-polo-club-indio-ca-usa-43c8cb2f.html"><span class="ab-name">Flosstradamus</span><span class="ab-time">10:30 PM – 11:20 PM</span></div><div class="ab" style="grid-column:3;grid-row:62/67" data-a="Tyler the Creator" data-s="Outdoor Theatre" data-t="9:15 PM – 10:05 PM" data-d="Saturday" data-w1="https://www.setlist.fm/setlist/tyler-the-creator/2015/empire-polo-club-indio-ca-usa-73c89a41.html" data-w2="https://www.setlist.fm/setlist/tyler-the-creator/2015/empire-polo-club-indio-ca-usa-33c8fc15.html"><span class="ab-name">Tyler the Creator</span><span class="ab-time">9:15 PM – 10:05 PM</span></div><div class="ab" style="grid-column:3;grid-row:55/60" data-a="Father John Misty" data-s="Outdoor Theatre" data-t="8:00 PM – 8:50 PM" data-d="Saturday" data-w1="https://www.setlist.fm/setlist/father-john-misty/2015/empire-polo-club-indio-ca-usa-3c8a9a3.html" data-w2="https://www.setlist.fm/setlist/father-john-misty/2015/empire-polo-club-indio-ca-usa-2bc8fc3e.html"><span class="ab-name">Father John Misty</span><span class="ab-time">8:00 PM – 8:50 PM</span></div><div class="ab" style="grid-column:3;grid-row:47/52" data-a="Belle and Sebastian" data-s="Outdoor Theatre" data-t="6:40 PM – 7:30 PM" data-d="Saturday" data-w1="https://www.setlist.fm/setlist/belle-and-sebastian/2015/empire-polo-club-indio-ca-usa-13c8a9a1.html" data-w2="https://www.setlist.fm/setlist/belle-and-sebastian/2015/empire-polo-club-indio-ca-usa-23c8fc47.html"><span class="ab-name">Belle and Sebastian</span><span class="ab-time">6:40 PM – 7:30 PM</span></div><div class="ab" style="grid-column:3;grid-row:38/43" data-a="Chet Faker" data-s="Outdoor Theatre" data-t="5:10 PM – 6:00 PM" data-d="Saturday" data-w1="https://www.setlist.fm/setlist/chet-faker/2015/empire-polo-club-indio-ca-usa-1bc8a9a0.html" data-w2="https://www.setlist.fm/setlist/chet-faker/2015/empire-polo-club-indio-ca-usa-23c8fc3b.html"><span class="ab-name">Chet Faker</span><span class="ab-time">5:10 PM – 6:00 PM</span></div><div class="ab" style="grid-column:3;grid-row:31/35" data-a="Andrew McMahon in the Wilderness" data-s="Outdoor Theatre" data-t="4:05 PM – 4:45 PM" data-d="Saturday" data-w1="https://www.setlist.fm/setlist/andrew-mcmahon-in-the-wilderness/2015/empire-polo-club-indio-ca-usa-bc8a9a6.html" data-w2="https://www.setlist.fm/setlist/andrew-mcmahon-in-the-wilderness/2015/empire-polo-club-indio-ca-usa-7bc8cef8.html"><span class="ab-name">Andrew McMahon in the Wilderness</span><span class="ab-time">4:05 PM – 4:45 PM</span></div><div class="ab" style="grid-column:3;grid-row:25/29" data-a="Royal Blood" data-s="Outdoor Theatre" data-t="3:00 PM – 3:40 PM" data-d="Saturday" data-w1="https://www.setlist.fm/setlist/royal-blood/2015/empire-polo-club-indio-ca-usa-13c8a9a5.html" data-w2="https://www.setlist.fm/setlist/royal-blood/2015/kroq-coachella-house-indio-ca-usa-6bc8923a.html"><span class="ab-name">Royal Blood</span><span class="ab-time">3:00 PM – 3:40 PM</span></div><div class="ab" style="grid-column:3;grid-row:18/22" data-a="Perfume Genius" data-s="Outdoor Theatre" data-t="1:55 PM – 2:35 PM" data-d="Saturday" data-w1="https://www.setlist.fm/setlist/perfume-genius/2015/empire-polo-club-indio-ca-usa-3c8a99b.html" data-w2="https://www.setlist.fm/setlist/perfume-genius/2015/empire-polo-club-indio-ca-usa-13c8eded.html"><span class="ab-name">Perfume Genius</span><span class="ab-time">1:55 PM – 2:35 PM</span></div><div class="ab" style="grid-column:3;grid-row:13/16" data-a="Jamestown Revival" data-s="Outdoor Theatre" data-t="1:00 PM – 1:35 PM" data-d="Saturday" data-w1="https://www.setlist.fm/setlist/jamestown-revival/2015/empire-polo-club-indio-ca-usa-bc8a99a.html" data-w2="https://www.setlist.fm/setlist/jamestown-revival/2015/empire-polo-club-indio-ca-usa-3bc8fc34.html"><span class="ab-name">Jamestown Revival</span><span class="ab-time">1:00 PM – 1:35 PM</span></div><div class="ab" style="grid-column:3;grid-row:7/11" data-a="PHOX" data-s="Outdoor Theatre" data-t="12:00 PM – 12:40 PM" data-d="Saturday" data-w1="https://www.setlist.fm/setlist/phox/2015/empire-polo-club-indio-ca-usa-1bc8a998.html" data-w2="https://www.setlist.fm/setlist/phox/2015/empire-polo-club-indio-ca-usa-2bc8fc22.html"><span class="ab-name">PHOX</span><span class="ab-time">12:00 PM – 12:40 PM</span></div><div class="ab" style="grid-column:3;grid-row:1/5" data-a="Mantastique" data-s="Outdoor Theatre" data-t="11:00 AM – 11:40 AM" data-d="Saturday" data-w1="https://www.setlist.fm/setlist/mo/2015/empire-polo-club-indio-ca-usa-7bc8961c.html" data-w2="https://www.setlist.fm/setlist/mo/2015/empire-polo-club-indio-ca-usa-3bc8e808.html"><span class="ab-name">Mantastique</span><span class="ab-time">11:00 AM – 11:40 AM</span></div><div class="ab" style="grid-column:4;grid-row:79/88" data-a="Swans" data-s="Gobi" data-t="12:05 AM" data-d="Saturday" data-w1="https://www.setlist.fm/setlist/swans/2015/empire-polo-club-indio-ca-usa-23c894d7.html" data-w2="https://www.setlist.fm/setlist/swans/2015/empire-polo-club-indio-ca-usa-2bc8e4d6.html"><span class="ab-name">Swans</span><span class="ab-time">12:05 AM</span></div><div class="ab" style="grid-column:4;grid-row:72/77" data-a="Drive Like Jehu" data-s="Gobi" data-t="10:50 PM – 11:40 PM" data-d="Saturday" data-w1="https://www.setlist.fm/setlist/drive-like-jehu/2015/empire-polo-club-indio-ca-usa-bc8a99e.html" data-w2="https://www.setlist.fm/setlist/drive-like-jehu/2015/empire-polo-club-indio-ca-usa-23c8fc3f.html"><span class="ab-name">Drive Like Jehu</span><span class="ab-time">10:50 PM – 11:40 PM</span></div><div class="ab" style="grid-column:4;grid-row:64/69" data-a="FKA twigs" data-s="Gobi" data-t="9:35 PM – 10:25 PM" data-d="Saturday" data-w1="https://www.setlist.fm/setlist/fka-twigs/2015/empire-polo-club-indio-ca-usa-1bc8a99c.html" data-w2="https://www.setlist.fm/setlist/fka-twigs/2015/empire-polo-club-indio-ca-usa-33c8fc3d.html"><span class="ab-name">FKA twigs</span><span class="ab-time">9:35 PM – 10:25 PM</span></div><div class="ab" style="grid-column:4;grid-row:57/61" data-a="The Gaslamp Killer Experience" data-s="Gobi" data-t="8:20 PM – 9:05 PM" data-d="Saturday" data-w1="https://www.setlist.fm/setlist/the-gaslamp-killer/2015/empire-polo-club-indio-ca-usa-3c8a993.html" data-w2="https://www.setlist.fm/setlist/the-gaslamp-killer/2015/empire-polo-club-indio-ca-usa-2bc8fc1e.html"><span class="ab-name">The Gaslamp Killer Experience</span><span class="ab-time">8:20 PM – 9:05 PM</span></div><div class="ab" style="grid-column:4;grid-row:50/54" data-a="Glass Animals" data-s="Gobi" data-t="7:10 PM – 7:55 PM" data-d="Saturday" data-w1="https://www.setlist.fm/setlist/glass-animals/2015/empire-polo-club-indio-ca-usa-bc8a992.html" data-w2="https://www.setlist.fm/setlist/glass-animals/2015/empire-polo-club-indio-ca-usa-3bc8fc3c.html"><span class="ab-name">Glass Animals</span><span class="ab-time">7:10 PM – 7:55 PM</span></div><div class="ab" style="grid-column:4;grid-row:43/47" data-a="Yelle" data-s="Gobi" data-t="6:00 PM – 6:45 PM" data-d="Saturday" data-w1="https://www.setlist.fm/setlist/yelle/2015/empire-polo-club-indio-ca-usa-23c898bf.html" data-w2="https://www.setlist.fm/setlist/yelle/2015/empire-polo-club-indio-ca-usa-33c8fc09.html"><span class="ab-name">Yelle</span><span class="ab-time">6:00 PM – 6:45 PM</span></div><div class="ab" style="grid-column:4;grid-row:35/40" data-a="Cashmere Cat" data-s="Gobi" data-t="4:45 PM – 5:35 PM" data-d="Saturday" data-w1="https://www.setlist.fm/setlist/cashmere-cat/2015/empire-polo-club-indio-ca-usa-1bc8a990.html" data-w2="https://www.setlist.fm/setlist/cashmere-cat/2015/empire-polo-club-indio-ca-usa-3bc8fc44.html"><span class="ab-name">Cashmere Cat</span><span class="ab-time">4:45 PM – 5:35 PM</span></div><div class="ab" style="grid-column:4;grid-row:29/33" data-a="Benjamin Booker" data-s="Gobi" data-t="3:40 PM – 4:20 PM" data-d="Saturday" data-w1="https://www.setlist.fm/setlist/benjamin-booker/2015/empire-polo-club-indio-ca-usa-bc8a996.html" data-w2="https://www.setlist.fm/setlist/benjamin-booker/2015/empire-polo-club-indio-ca-usa-bc8c10e.html"><span class="ab-name">Benjamin Booker</span><span class="ab-time">3:40 PM – 4:20 PM</span></div><div class="ab" style="grid-column:4;grid-row:22/26" data-a="Lights" data-s="Gobi" data-t="2:30 PM – 3:15 PM" data-d="Saturday" data-w1="https://www.setlist.fm/setlist/lights/2015/empire-polo-club-indio-ca-usa-23c89847.html" data-w2="https://www.setlist.fm/setlist/lights/2015/empire-polo-club-indio-ca-usa-23c8fc2b.html"><span class="ab-name">Lights</span><span class="ab-time">2:30 PM – 3:15 PM</span></div><div class="ab" style="grid-column:4;grid-row:15/19" data-a="Parquet Courts" data-s="Gobi" data-t="1:25 PM – 2:05 PM" data-d="Saturday" data-w1="https://www.setlist.fm/setlist/parquet-courts/2015/empire-polo-club-indio-ca-usa-13c8a995.html" data-w2="https://www.setlist.fm/setlist/parquet-courts/2015/empire-polo-club-indio-ca-usa-3bc8fc2c.html"><span class="ab-name">Parquet Courts</span><span class="ab-time">1:25 PM – 2:05 PM</span></div><div class="ab" style="grid-column:4;grid-row:10/13" data-a="Coasts" data-s="Gobi" data-t="12:35 PM – 1:05 PM" data-d="Saturday" data-w1="https://www.setlist.fm/setlist/coasts/2015/empire-polo-club-indio-ca-usa-1bc8a994.html" data-w2="https://www.setlist.fm/setlist/coasts/2015/empire-polo-club-indio-ca-usa-33c8fc39.html"><span class="ab-name">Coasts</span><span class="ab-time">12:35 PM – 1:05 PM</span></div><div class="ab" style="grid-column:4;grid-row:5/8" data-a="Until the Ribbon Breaks" data-s="Gobi" data-t="11:45 AM – 12:15 PM" data-d="Saturday" data-w1="https://www.setlist.fm/setlist/until-the-ribbon-breaks/2015/empire-polo-club-indio-ca-usa-bc8a98a.html" data-w2="https://www.setlist.fm/setlist/until-the-ribbon-breaks/2015/empire-polo-club-indio-ca-usa-2bc8fc0a.html"><span class="ab-name">Until the Ribbon Breaks</span><span class="ab-time">11:45 AM – 12:15 PM</span></div><div class="ab" style="grid-column:5;grid-row:79/88" data-a="Antemasque" data-s="Mojave" data-t="12:05 AM" data-d="Saturday" data-w1="https://www.setlist.fm/setlist/antemasque/2015/empire-polo-club-indio-ca-usa-13c8a989.html" data-w2="https://www.setlist.fm/setlist/antemasque/2015/empire-polo-club-indio-ca-usa-2bf7e81e.html"><span class="ab-name">Antemasque</span><span class="ab-time">12:05 AM</span></div><div class="ab" style="grid-column:5;grid-row:72/77" data-a="SBTRKT" data-s="Mojave" data-t="10:50 PM – 11:40 PM" data-d="Saturday" data-w1="https://www.setlist.fm/setlist/sbtrkt/2015/empire-polo-club-indio-ca-usa-1bc8a988.html" data-w2="https://www.setlist.fm/setlist/sbtrkt/2015/empire-polo-club-indio-ca-usa-3bc8fc24.html"><span class="ab-name">SBTRKT</span><span class="ab-time">10:50 PM – 11:40 PM</span></div><div class="ab" style="grid-column:5;grid-row:64/69" data-a="Tycho" data-s="Mojave" data-t="9:30 PM – 10:20 PM" data-d="Saturday" data-w1="https://www.setlist.fm/setlist/tycho/2015/empire-polo-club-indio-ca-usa-6bc8969e.html" data-w2="https://www.setlist.fm/setlist/tycho/2015/empire-polo-club-indio-ca-usa-239d1057.html"><span class="ab-name">Tycho</span><span class="ab-time">9:30 PM – 10:20 PM</span></div><div class="ab" style="grid-column:5;grid-row:56/61" data-a="Kasabian" data-s="Mojave" data-t="8:15 PM – 9:05 PM" data-d="Saturday" data-w1="https://www.setlist.fm/setlist/kasabian/2015/empire-polo-club-indio-ca-usa-3c8a98f.html" data-w2="https://www.setlist.fm/setlist/kasabian/2015/empire-polo-club-indio-ca-usa-3bc8fc30.html"><span class="ab-name">Kasabian</span><span class="ab-time">8:15 PM – 9:05 PM</span></div><div class="ab" style="grid-column:5;grid-row:48/53" data-a="Run the Jewels" data-s="Mojave" data-t="6:55 PM – 7:45 PM" data-d="Saturday" data-w1="https://www.setlist.fm/setlist/run-the-jewels/2015/empire-polo-club-indio-ca-usa-bc8a98e.html" data-w2="https://www.setlist.fm/setlist/run-the-jewels/2015/empire-polo-club-indio-ca-usa-33c8fc25.html"><span class="ab-name">Run the Jewels</span><span class="ab-time">6:55 PM – 7:45 PM</span></div><div class="ab" style="grid-column:5;grid-row:40/45" data-a="Jungle" data-s="Mojave" data-t="5:35 PM – 6:25 PM" data-d="Saturday" data-w1="https://www.setlist.fm/setlist/jungle/2015/empire-polo-club-indio-ca-usa-13c8a98d.html" data-w2="https://www.setlist.fm/setlist/jungle/2015/empire-polo-club-indio-ca-usa-33c8fc35.html"><span class="ab-name">Jungle</span><span class="ab-time">5:35 PM – 6:25 PM</span></div><div class="ab" style="grid-column:5;grid-row:33/37" data-a="Toro y Moi" data-s="Mojave" data-t="4:20 PM – 5:05 PM" data-d="Saturday" data-w1="https://www.setlist.fm/setlist/toro-y-moi/2015/empire-polo-club-indio-ca-usa-1bc8a98c.html" data-w2="https://www.setlist.fm/setlist/toro-y-moi/2015/empire-polo-club-indio-ca-usa-33c8fc1d.html"><span class="ab-name">Toro y Moi</span><span class="ab-time">4:20 PM – 5:05 PM</span></div><div class="ab" style="grid-column:5;grid-row:27/31" data-a="Bad Suns" data-s="Mojave" data-t="3:20 PM – 4:00 PM" data-d="Saturday" data-w1="https://www.setlist.fm/setlist/bad-suns/2015/empire-polo-club-indio-ca-usa-3c8a983.html" data-w2="https://www.setlist.fm/setlist/bad-suns/2015/empire-polo-club-indio-ca-usa-2bc8fc46.html"><span class="ab-name">Bad Suns</span><span class="ab-time">3:20 PM – 4:00 PM</span></div><div class="ab" style="grid-column:5;grid-row:21/25" data-a="St. Paul and the Broken Bones" data-s="Mojave" data-t="2:20 PM – 3:00 PM" data-d="Saturday" data-w1="" data-w2=""><span class="ab-name">St. Paul and the Broken Bones</span><span class="ab-time">2:20 PM – 3:00 PM</span></div><div class="ab" style="grid-column:5;grid-row:14/19" data-a="Ryn Weaver" data-s="Mojave" data-t="1:15 PM – 2:00 PM" data-d="Saturday" data-w1="https://www.setlist.fm/setlist/ryn-weaver/2015/empire-polo-club-indio-ca-usa-13c8a981.html" data-w2="https://www.setlist.fm/setlist/ryn-weaver/2015/empire-polo-club-indio-ca-usa-23c8fc1b.html"><span class="ab-name">Ryn Weaver</span><span class="ab-time">1:15 PM – 2:00 PM</span></div><div class="ab" style="grid-column:5;grid-row:9/13" data-a="Tourist" data-s="Mojave" data-t="12:20 PM – 1:00 PM" data-d="Saturday" data-w1="https://www.setlist.fm/setlist/tourist/2015/empire-polo-club-indio-ca-usa-23c8fc13.html" data-w2="https://www.setlist.fm/setlist/tourist/2015/empire-polo-club-indio-ca-usa-3bc8fc1c.html"><span class="ab-name">Tourist</span><span class="ab-time">12:20 PM – 1:00 PM</span></div><div class="ab" style="grid-column:5;grid-row:4/7" data-a="Radkey" data-s="Mojave" data-t="11:35 AM – 12:05 PM" data-d="Saturday" data-w1="https://www.setlist.fm/setlist/radkey/2015/empire-polo-club-indio-ca-usa-1bc8a980.html" data-w2="https://www.setlist.fm/setlist/radkey/2015/empire-polo-club-indio-ca-usa-33c8fc21.html"><span class="ab-name">Radkey</span><span class="ab-time">11:35 AM – 12:05 PM</span></div><div class="ab" style="grid-column:6;grid-row:74/83" data-a="Ratatat" data-s="Sahara" data-t="11:15 PM" data-d="Saturday" data-w1="https://www.setlist.fm/setlist/ratatat/2015/empire-polo-club-indio-ca-usa-3c8a987.html" data-w2="https://www.setlist.fm/setlist/ratatat/2015/empire-polo-club-indio-ca-usa-3bc8fc20.html"><span class="ab-name">Ratatat</span><span class="ab-time">11:15 PM</span></div><div class="ab" style="grid-column:6;grid-row:65/71" data-a="Deorro" data-s="Sahara" data-t="9:45 PM – 10:45 PM" data-d="Saturday" data-w1="https://www.setlist.fm/setlist/deorro/2015/empire-polo-club-indio-ca-usa-bc8a986.html" data-w2=""><span class="ab-name">Deorro</span><span class="ab-time">9:45 PM – 10:45 PM</span></div><div class="ab" style="grid-column:6;grid-row:57/63" data-a="Duke Dumont" data-s="Sahara" data-t="8:20 PM – 9:25 PM" data-d="Saturday" data-w1="https://www.setlist.fm/setlist/duke-dumont/2015/empire-polo-club-indio-ca-usa-13c8a985.html" data-w2="https://www.setlist.fm/setlist/duke-dumont/2015/empire-polo-club-indio-ca-usa-23c8fc0f.html"><span class="ab-name">Duke Dumont</span><span class="ab-time">8:20 PM – 9:25 PM</span></div><div class="ab" style="grid-column:6;grid-row:49/55" data-a="Cedric Gervais" data-s="Sahara" data-t="7:05 PM – 8:00 PM" data-d="Saturday" data-w1="https://www.setlist.fm/setlist/cedric-gervais/2015/empire-polo-club-indio-ca-usa-1bc8a984.html" data-w2=""><span class="ab-name">Cedric Gervais</span><span class="ab-time">7:05 PM – 8:00 PM</span></div><div class="ab" style="grid-column:6;grid-row:42/48" data-a="Dirty South" data-s="Sahara" data-t="5:55 PM – 6:50 PM" data-d="Saturday" data-w1="https://www.setlist.fm/setlist/dirty-south/2015/empire-polo-club-indio-ca-usa-23c8a87b.html" data-w2="https://www.setlist.fm/setlist/dirty-south/2015/empire-polo-club-indio-ca-usa-3bc8fc38.html"><span class="ab-name">Dirty South</span><span class="ab-time">5:55 PM – 6:50 PM</span></div><div class="ab" style="grid-column:6;grid-row:35/41" data-a="Yellow Claw" data-s="Sahara" data-t="4:45 PM – 5:40 PM" data-d="Saturday" data-w1="https://www.setlist.fm/setlist/yellow-claw/2015/empire-polo-club-indio-ca-usa-2bc8a87a.html" data-w2="https://www.setlist.fm/setlist/yellow-claw/2015/empire-polo-club-indio-ca-usa-23c8fc0b.html"><span class="ab-name">Yellow Claw</span><span class="ab-time">4:45 PM – 5:40 PM</span></div><div class="ab" style="grid-column:6;grid-row:28/34" data-a="Gramatik" data-s="Sahara" data-t="3:35 PM – 4:30 PM" data-d="Saturday" data-w1="https://www.setlist.fm/setlist/gramatik/2015/empire-polo-club-indio-ca-usa-3bc8a878.html" data-w2="https://www.setlist.fm/setlist/gramatik/2015/empire-polo-club-indio-ca-usa-2bc8fc32.html"><span class="ab-name">Gramatik</span><span class="ab-time">3:35 PM – 4:30 PM</span></div><div class="ab" style="grid-column:6;grid-row:22/27" data-a="Alison Wonderland" data-s="Sahara" data-t="2:30 PM – 3:20 PM" data-d="Saturday" data-w1="https://www.setlist.fm/setlist/alison-wonderland/2015/empire-polo-club-indio-ca-usa-23c8a87f.html" data-w2="https://www.setlist.fm/setlist/alison-wonderland/2015/empire-polo-club-indio-ca-usa-3bc8fc4c.html"><span class="ab-name">Alison Wonderland</span><span class="ab-time">2:30 PM – 3:20 PM</span></div><div class="ab" style="grid-column:6;grid-row:15/20" data-a="Matthew Koma" data-s="Sahara" data-t="1:25 PM – 2:15 PM" data-d="Saturday" data-w1="https://www.setlist.fm/setlist/matthew-koma/2015/empire-polo-club-indio-ca-usa-2bc8a87e.html" data-w2="https://www.setlist.fm/setlist/matthew-koma/2015/empire-polo-club-indio-ca-usa-2bc8fc2e.html"><span class="ab-name">Matthew Koma</span><span class="ab-time">1:25 PM – 2:15 PM</span></div><div class="ab" style="grid-column:6;grid-row:9/14" data-a="Bixel Boys" data-s="Sahara" data-t="12:20 PM – 1:10 PM" data-d="Saturday" data-w1="" data-w2=""><span class="ab-name">Bixel Boys</span><span class="ab-time">12:20 PM – 1:10 PM</span></div><div class="ab" style="grid-column:6;grid-row:4/8" data-a="Dem Ham Boyz" data-s="Sahara" data-t="11:30 AM – 12:10 PM" data-d="Saturday" data-w1="https://www.setlist.fm/setlist/mo/2015/empire-polo-club-indio-ca-usa-7bc8961c.html" data-w2="https://www.setlist.fm/setlist/mo/2015/empire-polo-club-indio-ca-usa-3bc8e808.html"><span class="ab-name">Dem Ham Boyz</span><span class="ab-time">11:30 AM – 12:10 PM</span></div><div class="ab" style="grid-column:7;grid-row:77/86" data-a="Annie Mac" data-s="Yuma" data-t="11:45 PM" data-d="Saturday" data-w1="https://www.setlist.fm/setlist/annie-mac/2015/empire-polo-club-indio-ca-usa-23c8a873.html" data-w2=""><span class="ab-name">Annie Mac</span><span class="ab-time">11:45 PM</span></div><div class="ab" style="grid-column:7;grid-row:69/77" data-a="Loco Dice" data-s="Yuma" data-t="10:20 PM – 11:45 PM" data-d="Saturday" data-w1="https://www.setlist.fm/setlist/loco-dice/2015/empire-polo-club-indio-ca-usa-2bc8a872.html" data-w2=""><span class="ab-name">Loco Dice</span><span class="ab-time">10:20 PM – 11:45 PM</span></div><div class="ab" style="grid-column:7;grid-row:58/69" data-a="DJ Harvey" data-s="Yuma" data-t="8:30 PM – 10:20 PM" data-d="Saturday" data-w1="https://www.setlist.fm/setlist/dj-harvey/2015/empire-polo-club-indio-ca-usa-3bc8a870.html" data-w2=""><span class="ab-name">DJ Harvey</span><span class="ab-time">8:30 PM – 10:20 PM</span></div><div class="ab" style="grid-column:7;grid-row:48/58" data-a="Danny Tenaglia" data-s="Yuma" data-t="6:50 PM – 8:30 PM" data-d="Saturday" data-w1="https://www.setlist.fm/setlist/danny-tenaglia/2015/empire-polo-club-indio-ca-usa-23c8a877.html" data-w2=""><span class="ab-name">Danny Tenaglia</span><span class="ab-time">6:50 PM – 8:30 PM</span></div><div class="ab" style="grid-column:7;grid-row:40/48" data-a="Carl Craig" data-s="Yuma" data-t="5:30 PM – 6:50 PM" data-d="Saturday" data-w1="https://www.setlist.fm/setlist/carl-craig/2015/empire-polo-club-indio-ca-usa-2bc8a876.html" data-w2="https://www.setlist.fm/setlist/carl-craig/2015/empire-polo-club-indio-ca-usa-43c8ef03.html"><span class="ab-name">Carl Craig</span><span class="ab-time">5:30 PM – 6:50 PM</span></div><div class="ab" style="grid-column:7;grid-row:33/40" data-a="Tale Of Us" data-s="Yuma" data-t="4:20 PM – 5:30 PM" data-d="Saturday" data-w1="https://www.setlist.fm/setlist/tale-of-us/2015/empire-polo-club-indio-ca-usa-33c8a875.html" data-w2="https://www.setlist.fm/setlist/tale-of-us/2015/empire-polo-club-indio-ca-usa-23c8fc1f.html"><span class="ab-name">Tale Of Us</span><span class="ab-time">4:20 PM – 5:30 PM</span></div><div class="ab" style="grid-column:7;grid-row:26/33" data-a="Andrea Oliva" data-s="Yuma" data-t="3:10 PM – 4:20 PM" data-d="Saturday" data-w1="https://www.setlist.fm/setlist/andrea-oliva/2015/empire-polo-club-indio-ca-usa-2bc8a86a.html" data-w2=""><span class="ab-name">Andrea Oliva</span><span class="ab-time">3:10 PM – 4:20 PM</span></div><div class="ab" style="grid-column:7;grid-row:20/26" data-a="Lauren Lane" data-s="Yuma" data-t="2:10 PM – 3:10 PM" data-d="Saturday" data-w1="" data-w2=""><span class="ab-name">Lauren Lane</span><span class="ab-time">2:10 PM – 3:10 PM</span></div><div class="ab" style="grid-column:7;grid-row:13/20" data-a="Mor Elian" data-s="Yuma" data-t="1:00 PM – 2:10 PM" data-d="Saturday" data-w1="https://www.setlist.fm/setlist/mo/2015/empire-polo-club-indio-ca-usa-7bc8961c.html" data-w2="https://www.setlist.fm/setlist/mo/2015/empire-polo-club-indio-ca-usa-3bc8e808.html"><span class="ab-name">Mor Elian</span><span class="ab-time">1:00 PM – 2:10 PM</span></div>
+  </div>
+</section>
+<section class="day-section sunday" id="sunday">
+  <div class="day-banner"><span class="day-name">SUNDAY</span></div>
+  <div class="stage-bar"><div class="time-ph"></div><div class="sh">Coachella Stage</div><div class="sh">Outdoor Theatre</div><div class="sh">Gobi</div><div class="sh">Mojave</div><div class="sh">Sahara</div><div class="sh">Yuma</div></div>
+  <div class="sched-grid">
+    <div class="hl" style="grid-column:1;grid-row:1">11<em>AM</em></div>
+<div class="hl" style="grid-column:1;grid-row:7">12<em>PM</em></div>
+<div class="hl" style="grid-column:1;grid-row:13">1<em>PM</em></div>
+<div class="hl" style="grid-column:1;grid-row:19">2<em>PM</em></div>
+<div class="hl" style="grid-column:1;grid-row:25">3<em>PM</em></div>
+<div class="hl" style="grid-column:1;grid-row:31">4<em>PM</em></div>
+<div class="hl" style="grid-column:1;grid-row:37">5<em>PM</em></div>
+<div class="hl" style="grid-column:1;grid-row:43">6<em>PM</em></div>
+<div class="hl" style="grid-column:1;grid-row:49">7<em>PM</em></div>
+<div class="hl" style="grid-column:1;grid-row:55">8<em>PM</em></div>
+<div class="hl" style="grid-column:1;grid-row:61">9<em>PM</em></div>
+<div class="hl" style="grid-column:1;grid-row:67">10<em>PM</em></div>
+<div class="hl" style="grid-column:1;grid-row:73">11<em>PM</em></div>
+<div class="hl" style="grid-column:1;grid-row:79">12<em>AM</em></div>
+<div class="hl" style="grid-column:1;grid-row:85">1<em>AM</em></div>
+    <div class="hline" style="grid-column:2;grid-row:1/2"></div>
+<div class="hline" style="grid-column:3;grid-row:1/2"></div>
+<div class="hline" style="grid-column:4;grid-row:1/2"></div>
+<div class="hline" style="grid-column:5;grid-row:1/2"></div>
+<div class="hline" style="grid-column:6;grid-row:1/2"></div>
+<div class="hline" style="grid-column:7;grid-row:1/2"></div>
+<div class="hline" style="grid-column:2;grid-row:7/8"></div>
+<div class="hline" style="grid-column:3;grid-row:7/8"></div>
+<div class="hline" style="grid-column:4;grid-row:7/8"></div>
+<div class="hline" style="grid-column:5;grid-row:7/8"></div>
+<div class="hline" style="grid-column:6;grid-row:7/8"></div>
+<div class="hline" style="grid-column:7;grid-row:7/8"></div>
+<div class="hline" style="grid-column:2;grid-row:13/14"></div>
+<div class="hline" style="grid-column:3;grid-row:13/14"></div>
+<div class="hline" style="grid-column:4;grid-row:13/14"></div>
+<div class="hline" style="grid-column:5;grid-row:13/14"></div>
+<div class="hline" style="grid-column:6;grid-row:13/14"></div>
+<div class="hline" style="grid-column:7;grid-row:13/14"></div>
+<div class="hline" style="grid-column:2;grid-row:19/20"></div>
+<div class="hline" style="grid-column:3;grid-row:19/20"></div>
+<div class="hline" style="grid-column:4;grid-row:19/20"></div>
+<div class="hline" style="grid-column:5;grid-row:19/20"></div>
+<div class="hline" style="grid-column:6;grid-row:19/20"></div>
+<div class="hline" style="grid-column:7;grid-row:19/20"></div>
+<div class="hline" style="grid-column:2;grid-row:25/26"></div>
+<div class="hline" style="grid-column:3;grid-row:25/26"></div>
+<div class="hline" style="grid-column:4;grid-row:25/26"></div>
+<div class="hline" style="grid-column:5;grid-row:25/26"></div>
+<div class="hline" style="grid-column:6;grid-row:25/26"></div>
+<div class="hline" style="grid-column:7;grid-row:25/26"></div>
+<div class="hline" style="grid-column:2;grid-row:31/32"></div>
+<div class="hline" style="grid-column:3;grid-row:31/32"></div>
+<div class="hline" style="grid-column:4;grid-row:31/32"></div>
+<div class="hline" style="grid-column:5;grid-row:31/32"></div>
+<div class="hline" style="grid-column:6;grid-row:31/32"></div>
+<div class="hline" style="grid-column:7;grid-row:31/32"></div>
+<div class="hline" style="grid-column:2;grid-row:37/38"></div>
+<div class="hline" style="grid-column:3;grid-row:37/38"></div>
+<div class="hline" style="grid-column:4;grid-row:37/38"></div>
+<div class="hline" style="grid-column:5;grid-row:37/38"></div>
+<div class="hline" style="grid-column:6;grid-row:37/38"></div>
+<div class="hline" style="grid-column:7;grid-row:37/38"></div>
+<div class="hline" style="grid-column:2;grid-row:43/44"></div>
+<div class="hline" style="grid-column:3;grid-row:43/44"></div>
+<div class="hline" style="grid-column:4;grid-row:43/44"></div>
+<div class="hline" style="grid-column:5;grid-row:43/44"></div>
+<div class="hline" style="grid-column:6;grid-row:43/44"></div>
+<div class="hline" style="grid-column:7;grid-row:43/44"></div>
+<div class="hline" style="grid-column:2;grid-row:49/50"></div>
+<div class="hline" style="grid-column:3;grid-row:49/50"></div>
+<div class="hline" style="grid-column:4;grid-row:49/50"></div>
+<div class="hline" style="grid-column:5;grid-row:49/50"></div>
+<div class="hline" style="grid-column:6;grid-row:49/50"></div>
+<div class="hline" style="grid-column:7;grid-row:49/50"></div>
+<div class="hline" style="grid-column:2;grid-row:55/56"></div>
+<div class="hline" style="grid-column:3;grid-row:55/56"></div>
+<div class="hline" style="grid-column:4;grid-row:55/56"></div>
+<div class="hline" style="grid-column:5;grid-row:55/56"></div>
+<div class="hline" style="grid-column:6;grid-row:55/56"></div>
+<div class="hline" style="grid-column:7;grid-row:55/56"></div>
+<div class="hline" style="grid-column:2;grid-row:61/62"></div>
+<div class="hline" style="grid-column:3;grid-row:61/62"></div>
+<div class="hline" style="grid-column:4;grid-row:61/62"></div>
+<div class="hline" style="grid-column:5;grid-row:61/62"></div>
+<div class="hline" style="grid-column:6;grid-row:61/62"></div>
+<div class="hline" style="grid-column:7;grid-row:61/62"></div>
+<div class="hline" style="grid-column:2;grid-row:67/68"></div>
+<div class="hline" style="grid-column:3;grid-row:67/68"></div>
+<div class="hline" style="grid-column:4;grid-row:67/68"></div>
+<div class="hline" style="grid-column:5;grid-row:67/68"></div>
+<div class="hline" style="grid-column:6;grid-row:67/68"></div>
+<div class="hline" style="grid-column:7;grid-row:67/68"></div>
+<div class="hline" style="grid-column:2;grid-row:73/74"></div>
+<div class="hline" style="grid-column:3;grid-row:73/74"></div>
+<div class="hline" style="grid-column:4;grid-row:73/74"></div>
+<div class="hline" style="grid-column:5;grid-row:73/74"></div>
+<div class="hline" style="grid-column:6;grid-row:73/74"></div>
+<div class="hline" style="grid-column:7;grid-row:73/74"></div>
+<div class="hline" style="grid-column:2;grid-row:79/80"></div>
+<div class="hline" style="grid-column:3;grid-row:79/80"></div>
+<div class="hline" style="grid-column:4;grid-row:79/80"></div>
+<div class="hline" style="grid-column:5;grid-row:79/80"></div>
+<div class="hline" style="grid-column:6;grid-row:79/80"></div>
+<div class="hline" style="grid-column:7;grid-row:79/80"></div>
+<div class="hline" style="grid-column:2;grid-row:85/86"></div>
+<div class="hline" style="grid-column:3;grid-row:85/86"></div>
+<div class="hline" style="grid-column:4;grid-row:85/86"></div>
+<div class="hline" style="grid-column:5;grid-row:85/86"></div>
+<div class="hline" style="grid-column:6;grid-row:85/86"></div>
+<div class="hline" style="grid-column:7;grid-row:85/86"></div>
+    <div class="ab" style="grid-column:2;grid-row:68/77" data-a="Drake" data-s="Coachella Stage" data-t="10:15 PM" data-d="Sunday" data-w1="https://www.setlist.fm/setlist/drake/2015/empire-polo-club-indio-ca-usa-23c8a4e7.html" data-w2="https://www.setlist.fm/setlist/drake/2015/empire-polo-club-indio-ca-usa-4bc8e39e.html"><span class="ab-name">Drake</span><span class="ab-time">10:15 PM</span></div><div class="ab" style="grid-column:2;grid-row:60/65" data-a="Florence + the Machine" data-s="Coachella Stage" data-t="8:50 PM – 9:45 PM" data-d="Sunday" data-w1="https://www.setlist.fm/setlist/florence-the-machine/2015/empire-polo-club-indio-ca-usa-3bc8a4e4.html" data-w2="https://www.setlist.fm/setlist/florence-the-machine/2015/empire-polo-club-indio-ca-usa-2bc8ece6.html"><span class="ab-name">Florence + the Machine</span><span class="ab-time">8:50 PM – 9:45 PM</span></div><div class="ab" style="grid-column:2;grid-row:51/56" data-a="Kaskade" data-s="Coachella Stage" data-t="7:25 PM – 8:15 PM" data-d="Sunday" data-w1="https://www.setlist.fm/setlist/kaskade/2015/empire-polo-club-indio-ca-usa-3bc8a4d4.html" data-w2="https://www.setlist.fm/setlist/kaskade/2015/empire-polo-club-indio-ca-usa-53f1eb65.html"><span class="ab-name">Kaskade</span><span class="ab-time">7:25 PM – 8:15 PM</span></div><div class="ab" style="grid-column:2;grid-row:41/46" data-a="Marina and the Diamonds" data-s="Coachella Stage" data-t="5:45 PM – 6:35 PM" data-d="Sunday" data-w1="https://www.setlist.fm/setlist/marina/2015/empire-polo-club-indio-ca-usa-23c8a4cf.html" data-w2="https://www.setlist.fm/setlist/marina/2015/empire-polo-club-indio-ca-usa-3bc8ece4.html"><span class="ab-name">Marina and the Diamonds</span><span class="ab-time">5:45 PM – 6:35 PM</span></div><div class="ab" style="grid-column:2;grid-row:34/38" data-a="St. Lucia" data-s="Coachella Stage" data-t="4:30 PM – 5:15 PM" data-d="Sunday" data-w1="https://www.setlist.fm/setlist/st-lucia/2015/empire-polo-club-indio-ca-usa-63c8a633.html" data-w2="https://www.setlist.fm/setlist/st-lucia/2015/empire-polo-club-indio-ca-usa-23c8e80f.html"><span class="ab-name">St. Lucia</span><span class="ab-time">4:30 PM – 5:15 PM</span></div><div class="ab" style="grid-column:2;grid-row:27/31" data-a="Circa Survive" data-s="Coachella Stage" data-t="3:20 PM – 4:05 PM" data-d="Sunday" data-w1="https://www.setlist.fm/setlist/circa-survive/2015/empire-polo-club-indio-ca-usa-6bc8a632.html" data-w2="https://www.setlist.fm/setlist/circa-survive/2015/empire-polo-club-indio-ca-usa-2bc8e80e.html"><span class="ab-name">Circa Survive</span><span class="ab-time">3:20 PM – 4:05 PM</span></div><div class="ab" style="grid-column:2;grid-row:21/24" data-a="The Orwells" data-s="Coachella Stage" data-t="2:20 PM – 2:55 PM" data-d="Sunday" data-w1="https://www.setlist.fm/setlist/the-orwells/2015/empire-polo-club-indio-ca-usa-73c8a631.html" data-w2="https://www.setlist.fm/setlist/the-orwells/2015/empire-polo-club-indio-ca-usa-23c8e847.html"><span class="ab-name">The Orwells</span><span class="ab-time">2:20 PM – 2:55 PM</span></div><div class="ab" style="grid-column:2;grid-row:15/18" data-a="Saint Motel" data-s="Coachella Stage" data-t="1:20 PM – 1:55 PM" data-d="Sunday" data-w1="https://www.setlist.fm/setlist/saint-motel/2015/empire-polo-club-indio-ca-usa-7bc8a630.html" data-w2="https://www.setlist.fm/setlist/saint-motel/2015/empire-polo-club-indio-ca-usa-4bc8c33e.html"><span class="ab-name">Saint Motel</span><span class="ab-time">1:20 PM – 1:55 PM</span></div><div class="ab" style="grid-column:2;grid-row:11/14" data-a="Jimbo Jenkins" data-s="Coachella Stage" data-t="12:45 PM – 1:15 PM" data-d="Sunday" data-w1="https://www.setlist.fm/setlist/mo/2015/empire-polo-club-indio-ca-usa-7bc8961c.html" data-w2="https://www.setlist.fm/setlist/mo/2015/empire-polo-club-indio-ca-usa-3bc8e808.html"><span class="ab-name">Jimbo Jenkins</span><span class="ab-time">12:45 PM – 1:15 PM</span></div><div class="ab" style="grid-column:3;grid-row:63/72" data-a="Fitz & the Tantrums" data-s="Outdoor Theatre" data-t="9:20 PM" data-d="Sunday" data-w1="https://www.setlist.fm/setlist/mo/2015/empire-polo-club-indio-ca-usa-7bc8961c.html" data-w2="https://www.setlist.fm/setlist/mo/2015/empire-polo-club-indio-ca-usa-3bc8e808.html"><span class="ab-name">Fitz & the Tantrums</span><span class="ab-time">9:20 PM</span></div><div class="ab" style="grid-column:3;grid-row:55/60" data-a="St. Vincent" data-s="Outdoor Theatre" data-t="8:00 PM – 8:50 PM" data-d="Sunday" data-w1="https://www.setlist.fm/setlist/st-vincent/2015/empire-polo-club-indio-ca-usa-3bc8a4c8.html" data-w2="https://www.setlist.fm/setlist/st-vincent/2015/empire-polo-club-indio-ca-usa-2bc8ecda.html"><span class="ab-name">St. Vincent</span><span class="ab-time">8:00 PM – 8:50 PM</span></div><div class="ab" style="grid-column:3;grid-row:46/51" data-a="Ryan Adams" data-s="Outdoor Theatre" data-t="6:35 PM – 7:25 PM" data-d="Sunday" data-w1="https://www.setlist.fm/setlist/ryan-adams/2015/empire-polo-club-indio-ca-usa-33c8a4c9.html" data-w2="https://www.setlist.fm/setlist/ryan-adams/2015/empire-polo-club-indio-ca-usa-7bc8ee28.html"><span class="ab-name">Ryan Adams</span><span class="ab-time">6:35 PM – 7:25 PM</span></div><div class="ab" style="grid-column:3;grid-row:40/45" data-a="Jenny Lewis" data-s="Outdoor Theatre" data-t="5:35 PM – 6:25 PM" data-d="Sunday" data-w1="https://www.setlist.fm/setlist/jenny-lewis/2015/empire-polo-club-indio-ca-usa-73c8a635.html" data-w2="https://www.setlist.fm/setlist/jenny-lewis/2015/empire-polo-club-indio-ca-usa-4bc8effa.html"><span class="ab-name">Jenny Lewis</span><span class="ab-time">5:35 PM – 6:25 PM</span></div><div class="ab" style="grid-column:3;grid-row:32/37" data-a="Built To Spill" data-s="Outdoor Theatre" data-t="4:15 PM – 5:05 PM" data-d="Sunday" data-w1="https://www.setlist.fm/setlist/built-to-spill/2015/empire-polo-club-indio-ca-usa-63c8a62b.html" data-w2="https://www.setlist.fm/setlist/built-to-spill/2015/empire-polo-club-indio-ca-usa-43c8effb.html"><span class="ab-name">Built To Spill</span><span class="ab-time">4:15 PM – 5:05 PM</span></div><div class="ab" style="grid-column:3;grid-row:25/30" data-a="Mac DeMarco" data-s="Outdoor Theatre" data-t="3:05 PM – 3:50 PM" data-d="Sunday" data-w1="https://www.setlist.fm/setlist/mac-demarco/2015/empire-polo-club-indio-ca-usa-6bc8a62a.html" data-w2="https://www.setlist.fm/setlist/mac-demarco/2015/empire-polo-club-indio-ca-usa-33c8e80d.html"><span class="ab-name">Mac DeMarco</span><span class="ab-time">3:05 PM – 3:50 PM</span></div><div class="ab" style="grid-column:3;grid-row:19/23" data-a="Joyce Manor" data-s="Outdoor Theatre" data-t="2:00 PM – 2:40 PM" data-d="Sunday" data-w1="https://www.setlist.fm/setlist/joyce-manor/2015/empire-polo-club-indio-ca-usa-7bc8a628.html" data-w2=""><span class="ab-name">Joyce Manor</span><span class="ab-time">2:00 PM – 2:40 PM</span></div><div class="ab" style="grid-column:3;grid-row:13/17" data-a="Chicano Batman" data-s="Outdoor Theatre" data-t="1:00 PM – 1:40 PM" data-d="Sunday" data-w1="https://www.setlist.fm/setlist/chicano-batman/2015/empire-polo-club-indio-ca-usa-3b5730c0.html" data-w2="https://www.setlist.fm/setlist/chicano-batman/2015/empire-polo-club-indio-ca-usa-2bfe1ce2.html"><span class="ab-name">Chicano Batman</span><span class="ab-time">1:00 PM – 1:40 PM</span></div><div class="ab" style="grid-column:3;grid-row:7/10" data-a="Gabe Real" data-s="Outdoor Theatre" data-t="12:00 PM – 12:35 PM" data-d="Sunday" data-w1="https://www.setlist.fm/setlist/gabe-real/2015/empire-polo-club-indio-ca-usa-63c8a62f.html" data-w2=""><span class="ab-name">Gabe Real</span><span class="ab-time">12:00 PM – 12:35 PM</span></div><div class="ab" style="grid-column:4;grid-row:71/80" data-a="Kaytranada" data-s="Gobi" data-t="10:45 PM" data-d="Sunday" data-w1="https://www.setlist.fm/setlist/kaytranada/2015/empire-polo-club-indio-ca-usa-6bc8a62e.html" data-w2="https://www.setlist.fm/setlist/kaytranada/2015/empire-polo-club-indio-ca-usa-53fd4341.html"><span class="ab-name">Kaytranada</span><span class="ab-time">10:45 PM</span></div><div class="ab" style="grid-column:4;grid-row:64/69" data-a="ODESZA" data-s="Gobi" data-t="9:35 PM – 10:25 PM" data-d="Sunday" data-w1="https://www.setlist.fm/setlist/odesza/2015/empire-polo-club-indio-ca-usa-7bc8a62c.html" data-w2=""><span class="ab-name">ODESZA</span><span class="ab-time">9:35 PM – 10:25 PM</span></div><div class="ab" style="grid-column:4;grid-row:57/62" data-a="Jamie xx" data-s="Gobi" data-t="8:20 PM – 9:10 PM" data-d="Sunday" data-w1="https://www.setlist.fm/setlist/jamie-xx/2015/empire-polo-club-indio-ca-usa-73c8a621.html" data-w2="https://www.setlist.fm/setlist/jamie-xx/2015/empire-polo-club-indio-ca-usa-43fd434f.html"><span class="ab-name">Jamie xx</span><span class="ab-time">8:20 PM – 9:10 PM</span></div><div class="ab" style="grid-column:4;grid-row:50/54" data-a="Philip Selway" data-s="Gobi" data-t="7:10 PM – 7:55 PM" data-d="Sunday" data-w1="https://www.setlist.fm/setlist/philip-selway/2015/empire-polo-club-indio-ca-usa-63c8a627.html" data-w2="https://www.setlist.fm/setlist/philip-selway/2015/empire-polo-club-indio-ca-usa-53c8eff9.html"><span class="ab-name">Philip Selway</span><span class="ab-time">7:10 PM – 7:55 PM</span></div><div class="ab" style="grid-column:4;grid-row:43/47" data-a="The Cribs" data-s="Gobi" data-t="6:05 PM – 6:45 PM" data-d="Sunday" data-w1="https://www.setlist.fm/setlist/the-cribs/2015/empire-polo-club-indio-ca-usa-73c8a625.html" data-w2="https://www.setlist.fm/setlist/the-cribs/2015/empire-polo-club-indio-ca-usa-33c8e841.html"><span class="ab-name">The Cribs</span><span class="ab-time">6:05 PM – 6:45 PM</span></div><div class="ab" style="grid-column:4;grid-row:34/41" data-a="Desaparecidos" data-s="Gobi" data-t="4:35 PM – 5:45 PM" data-d="Sunday" data-w1="https://www.setlist.fm/setlist/desaparecidos/2015/empire-polo-club-indio-ca-usa-6bc8a61a.html" data-w2="https://www.setlist.fm/setlist/desaparecidos/2015/empire-polo-club-indio-ca-usa-13c8dd21.html"><span class="ab-name">Desaparecidos</span><span class="ab-time">4:35 PM – 5:45 PM</span></div><div class="ab" style="grid-column:4;grid-row:27/32" data-a="Sturgill Simpson" data-s="Gobi" data-t="3:25 PM – 4:10 PM" data-d="Sunday" data-w1="https://www.setlist.fm/setlist/sturgill-simpson/2015/empire-polo-club-indio-ca-usa-7bc8a618.html" data-w2=""><span class="ab-name">Sturgill Simpson</span><span class="ab-time">3:25 PM – 4:10 PM</span></div><div class="ab" style="grid-column:4;grid-row:21/25" data-a="MO" data-s="Gobi" data-t="2:25 PM – 3:05 PM" data-d="Sunday" data-w1="https://www.setlist.fm/setlist/duke-dumont/2015/empire-polo-club-indio-ca-usa-13c8a985.html" data-w2="https://www.setlist.fm/setlist/duke-dumont/2015/empire-polo-club-indio-ca-usa-23c8fc0f.html"><span class="ab-name">MO</span><span class="ab-time">2:25 PM – 3:05 PM</span></div><div class="ab" style="grid-column:4;grid-row:15/19" data-a="Angel Olsen" data-s="Gobi" data-t="1:25 PM – 2:05 PM" data-d="Sunday" data-w1="https://www.setlist.fm/setlist/angel-olsen/2015/empire-polo-club-indio-ca-usa-63c8a61f.html" data-w2="https://www.setlist.fm/setlist/angel-olsen/2015/empire-polo-club-indio-ca-usa-43c8ef07.html"><span class="ab-name">Angel Olsen</span><span class="ab-time">1:25 PM – 2:05 PM</span></div><div class="ab" style="grid-column:4;grid-row:10/13" data-a="Night Terrors of 1927" data-s="Gobi" data-t="12:30 PM – 1:05 PM" data-d="Sunday" data-w1="https://www.setlist.fm/setlist/night-terrors-of-1927/2015/empire-polo-club-indio-ca-usa-73c8a61d.html" data-w2="https://www.setlist.fm/setlist/night-terrors-of-1927/2015/empire-polo-club-indio-ca-usa-53c8ef01.html"><span class="ab-name">Night Terrors of 1927</span><span class="ab-time">12:30 PM – 1:05 PM</span></div><div class="ab" style="grid-column:4;grid-row:6/8" data-a="Astronautica" data-s="Gobi" data-t="11:50 AM – 12:15 PM" data-d="Sunday" data-w1="https://www.setlist.fm/setlist/astronautica/2015/empire-polo-club-indio-ca-usa-7bc8a61c.html" data-w2=""><span class="ab-name">Astronautica</span><span class="ab-time">11:50 AM – 12:15 PM</span></div><div class="ab" style="grid-column:5;grid-row:73/82" data-a="Kygo" data-s="Mojave" data-t="11:00 PM" data-d="Sunday" data-w1="https://www.setlist.fm/setlist/kygo/2015/empire-polo-club-indio-ca-usa-63c8a613.html" data-w2=""><span class="ab-name">Kygo</span><span class="ab-time">11:00 PM</span></div><div class="ab" style="grid-column:5;grid-row:63/70" data-a="Gesaffelstein" data-s="Mojave" data-t="9:20 PM – 10:30 PM" data-d="Sunday" data-w1="https://www.setlist.fm/setlist/gesaffelstein/2015/empire-polo-club-indio-ca-usa-6bc8a612.html" data-w2="https://www.setlist.fm/setlist/gesaffelstein/2015/empire-polo-club-indio-ca-usa-4bf65bbe.html"><span class="ab-name">Gesaffelstein</span><span class="ab-time">9:20 PM – 10:30 PM</span></div><div class="ab" style="grid-column:5;grid-row:55/60" data-a="Stromae" data-s="Mojave" data-t="8:00 PM – 8:50 PM" data-d="Sunday" data-w1="https://www.setlist.fm/setlist/stromae/2015/empire-polo-club-indio-ca-usa-23c8a4c3.html" data-w2="https://www.setlist.fm/setlist/stromae/2015/empire-polo-club-indio-ca-usa-3bc8ecd8.html"><span class="ab-name">Stromae</span><span class="ab-time">8:00 PM – 8:50 PM</span></div><div class="ab" style="grid-column:5;grid-row:47/52" data-a="Brand New" data-s="Mojave" data-t="6:40 PM – 7:30 PM" data-d="Sunday" data-w1="https://www.setlist.fm/setlist/brand-new/2015/empire-polo-club-indio-ca-usa-bc8957a.html" data-w2="https://www.setlist.fm/setlist/brand-new/2015/empire-polo-club-indio-ca-usa-1bc8f14c.html"><span class="ab-name">Brand New</span><span class="ab-time">6:40 PM – 7:30 PM</span></div><div class="ab" style="grid-column:5;grid-row:40/44" data-a="Vance Joy" data-s="Mojave" data-t="5:30 PM – 6:15 PM" data-d="Sunday" data-w1="https://www.setlist.fm/setlist/vance-joy/2015/empire-polo-club-indio-ca-usa-33c8a4c1.html" data-w2="https://www.setlist.fm/setlist/vance-joy/2015/empire-polo-club-indio-ca-usa-23c8ecdf.html"><span class="ab-name">Vance Joy</span><span class="ab-time">5:30 PM – 6:15 PM</span></div><div class="ab" style="grid-column:5;grid-row:32/37" data-a="RAC" data-s="Mojave" data-t="4:10 PM – 5:00 PM" data-d="Sunday" data-w1="https://www.setlist.fm/setlist/rac/2015/empire-polo-club-indio-ca-usa-2bc88c2a.html" data-w2=""><span class="ab-name">RAC</span><span class="ab-time">4:10 PM – 5:00 PM</span></div><div class="ab" style="grid-column:5;grid-row:24/29" data-a="Panda Bear" data-s="Mojave" data-t="2:55 PM – 3:40 PM" data-d="Sunday" data-w1="https://www.setlist.fm/setlist/panda-bear/2015/empire-polo-club-indio-ca-usa-7bc8a610.html" data-w2="https://www.setlist.fm/setlist/panda-bear/2015/empire-polo-club-indio-ca-usa-5bc8ef04.html"><span class="ab-name">Panda Bear</span><span class="ab-time">2:55 PM – 3:40 PM</span></div><div class="ab" style="grid-column:5;grid-row:19/23" data-a="OFF!" data-s="Mojave" data-t="2:00 PM – 2:40 PM" data-d="Sunday" data-w1="https://www.setlist.fm/setlist/off/2015/empire-polo-club-indio-ca-usa-63c8a617.html" data-w2=""><span class="ab-name">OFF!</span><span class="ab-time">2:00 PM – 2:40 PM</span></div><div class="ab" style="grid-column:5;grid-row:13/17" data-a="Touche Amore" data-s="Mojave" data-t="1:00 PM – 1:40 PM" data-d="Sunday" data-w1="https://www.setlist.fm/setlist/mo/2015/empire-polo-club-indio-ca-usa-7bc8961c.html" data-w2="https://www.setlist.fm/setlist/mo/2015/empire-polo-club-indio-ca-usa-3bc8e808.html"><span class="ab-name">Touche Amore</span><span class="ab-time">1:00 PM – 1:40 PM</span></div><div class="ab" style="grid-column:5;grid-row:7/11" data-a="Sloan" data-s="Mojave" data-t="12:00 PM – 12:40 PM" data-d="Sunday" data-w1="https://www.setlist.fm/setlist/sloan/2015/empire-polo-club-indio-ca-usa-7bc8a614.html" data-w2="https://www.setlist.fm/setlist/sloan/2015/empire-polo-club-indio-ca-usa-23c8ec5f.html"><span class="ab-name">Sloan</span><span class="ab-time">12:00 PM – 12:40 PM</span></div><div class="ab" style="grid-column:5;grid-row:3/5" data-a="Little Red Spiders" data-s="Mojave" data-t="11:20 AM – 11:45 AM" data-d="Sunday" data-w1="" data-w2=""><span class="ab-name">Little Red Spiders</span><span class="ab-time">11:20 AM – 11:45 AM</span></div><div class="ab" style="grid-column:6;grid-row:61/70" data-a="David Guetta" data-s="Sahara" data-t="9:00 PM" data-d="Sunday" data-w1="https://www.setlist.fm/setlist/david-guetta/2015/empire-polo-club-indio-ca-usa-2bc8a4ca.html" data-w2="https://www.setlist.fm/setlist/david-guetta/2015/empire-polo-club-indio-ca-usa-33c8ece5.html"><span class="ab-name">David Guetta</span><span class="ab-time">9:00 PM</span></div><div class="ab" style="grid-column:6;grid-row:52/58" data-a="New World Punx" data-s="Sahara" data-t="7:35 PM – 8:30 PM" data-d="Sunday" data-w1="https://www.setlist.fm/setlist/new-world-punx/2015/empire-polo-club-indio-ca-usa-63c8a60b.html" data-w2=""><span class="ab-name">New World Punx</span><span class="ab-time">7:35 PM – 8:30 PM</span></div><div class="ab" style="grid-column:6;grid-row:45/51" data-a="Madeon" data-s="Sahara" data-t="6:20 PM – 7:20 PM" data-d="Sunday" data-w1="https://www.setlist.fm/setlist/madeon/2015/empire-polo-club-indio-ca-usa-6bc8a60a.html" data-w2="https://www.setlist.fm/setlist/madeon/2015/empire-polo-club-indio-ca-usa-5b8eeb3c.html"><span class="ab-name">Madeon</span><span class="ab-time">6:20 PM – 7:20 PM</span></div><div class="ab" style="grid-column:6;grid-row:36/42" data-a="Martin Solveig" data-s="Sahara" data-t="4:50 PM – 5:50 PM" data-d="Sunday" data-w1="https://www.setlist.fm/setlist/martin-solveig/2015/empire-polo-club-indio-ca-usa-7bc8a608.html" data-w2=""><span class="ab-name">Martin Solveig</span><span class="ab-time">4:50 PM – 5:50 PM</span></div><div class="ab" style="grid-column:6;grid-row:28/34" data-a="What So Not" data-s="Sahara" data-t="3:35 PM – 4:35 PM" data-d="Sunday" data-w1="https://www.setlist.fm/setlist/what-so-not/2015/empire-polo-club-indio-ca-usa-63c8a60f.html" data-w2=""><span class="ab-name">What So Not</span><span class="ab-time">3:35 PM – 4:35 PM</span></div><div class="ab" style="grid-column:6;grid-row:21/27" data-a="Claude VonStroke" data-s="Sahara" data-t="2:20 PM – 3:20 PM" data-d="Sunday" data-w1="https://www.setlist.fm/setlist/claude-vonstroke/2015/empire-polo-club-indio-ca-usa-73c8a60d.html" data-w2=""><span class="ab-name">Claude VonStroke</span><span class="ab-time">2:20 PM – 3:20 PM</span></div><div class="ab" style="grid-column:6;grid-row:15/19" data-a="Alf Alpha" data-s="Sahara" data-t="1:20 PM – 2:00 PM" data-d="Sunday" data-w1="" data-w2=""><span class="ab-name">Alf Alpha</span><span class="ab-time">1:20 PM – 2:00 PM</span></div><div class="ab" style="grid-column:6;grid-row:9/14" data-a="superduperbrick" data-s="Sahara" data-t="12:20 PM – 1:10 PM" data-d="Sunday" data-w1="" data-w2=""><span class="ab-name">superduperbrick</span><span class="ab-time">12:20 PM – 1:10 PM</span></div><div class="ab" style="grid-column:6;grid-row:4/8" data-a="Soslo" data-s="Sahara" data-t="11:30 AM – 12:10 PM" data-d="Sunday" data-w1="" data-w2=""><span class="ab-name">Soslo</span><span class="ab-time">11:30 AM – 12:10 PM</span></div><div class="ab" style="grid-column:7;grid-row:61/70" data-a="J.E.S.+S." data-s="Yuma" data-t="9:00 PM" data-d="Sunday" data-w1="" data-w2=""><span class="ab-name">J.E.S.+S.</span><span class="ab-time">9:00 PM</span></div><div class="ab" style="grid-column:7;grid-row:53/61" data-a="Guy Gerber" data-s="Yuma" data-t="7:40 PM – 9:00 PM" data-d="Sunday" data-w1="https://www.setlist.fm/setlist/guy-gerber/2015/empire-polo-club-indio-ca-usa-63c8a603.html" data-w2=""><span class="ab-name">Guy Gerber</span><span class="ab-time">7:40 PM – 9:00 PM</span></div><div class="ab" style="grid-column:7;grid-row:46/53" data-a="Ben Klock" data-s="Yuma" data-t="6:35 PM – 7:40 PM" data-d="Sunday" data-w1="https://www.setlist.fm/setlist/ben-klock/2015/empire-polo-club-indio-ca-usa-73c8a601.html" data-w2=""><span class="ab-name">Ben Klock</span><span class="ab-time">6:35 PM – 7:40 PM</span></div><div class="ab" style="grid-column:7;grid-row:40/46" data-a="Jason Bentley" data-s="Yuma" data-t="5:35 PM – 6:35 PM" data-d="Sunday" data-w1="https://www.setlist.fm/setlist/jason-bentley/2015/empire-polo-club-indio-ca-usa-7bc8a600.html" data-w2=""><span class="ab-name">Jason Bentley</span><span class="ab-time">5:35 PM – 6:35 PM</span></div><div class="ab" style="grid-column:7;grid-row:31/40" data-a="John Talabot" data-s="Yuma" data-t="4:00 PM – 5:35 PM" data-d="Sunday" data-w1="https://www.setlist.fm/setlist/john-talabot/2015/empire-polo-club-indio-ca-usa-6bc8a606.html" data-w2="https://www.setlist.fm/setlist/john-talabot/2015/empire-polo-club-indio-ca-usa-13bc956d.html"><span class="ab-name">John Talabot</span><span class="ab-time">4:00 PM – 5:35 PM</span></div><div class="ab" style="grid-column:7;grid-row:23/31" data-a="Tiger and Woods" data-s="Yuma" data-t="2:40 PM – 4:00 PM" data-d="Sunday" data-w1="" data-w2=""><span class="ab-name">Tiger and Woods</span><span class="ab-time">2:40 PM – 4:00 PM</span></div><div class="ab" style="grid-column:7;grid-row:15/23" data-a="tINI" data-s="Yuma" data-t="1:25 PM – 2:40 PM" data-d="Sunday" data-w1="" data-w2=""><span class="ab-name">tINI</span><span class="ab-time">1:25 PM – 2:40 PM</span></div><div class="ab" style="grid-column:7;grid-row:10/15" data-a="Doc Martin feat Sublevel Live" data-s="Yuma" data-t="12:30 PM – 1:25 PM" data-d="Sunday" data-w1="https://www.setlist.fm/setlist/mo/2015/empire-polo-club-indio-ca-usa-7bc8961c.html" data-w2="https://www.setlist.fm/setlist/mo/2015/empire-polo-club-indio-ca-usa-3bc8e808.html"><span class="ab-name">Doc Martin feat Sublevel Live</span><span class="ab-time">12:30 PM – 1:25 PM</span></div><div class="ab" style="grid-column:7;grid-row:4/10" data-a="Trent Cantrelle" data-s="Yuma" data-t="11:30 AM – 12:30 PM" data-d="Sunday" data-w1="https://www.setlist.fm/setlist/trent-cantrelle/2015/empire-polo-club-indio-ca-usa-63c8a6fb.html" data-w2=""><span class="ab-name">Trent Cantrelle</span><span class="ab-time">11:30 AM – 12:30 PM</span></div>
+  </div>
+</section>
+
+<!-- Modal -->
+<div id="modal-overlay">
+  <div id="modal-card">
+    <div class="mc-header">
+      <div class="mc-day-stage" id="mc-daystage"></div>
+      <div class="mc-artist" id="mc-artist"></div>
+      <div class="mc-time" id="mc-time"></div>
+      <button class="mc-close" id="mc-close">✕</button>
+    </div>
+    <div class="mc-divider"></div>
+    <div id="mc-btns-area"></div>
+  </div>
+</div>
+
+<script>
+const overlay = document.getElementById('modal-overlay');
+const mcClose = document.getElementById('mc-close');
+const mcArtist = document.getElementById('mc-artist');
+const mcDayStage = document.getElementById('mc-daystage');
+const mcTime = document.getElementById('mc-time');
+const mcBtns = document.getElementById('mc-btns-area');
+
+function openModal(el) {
+  mcArtist.textContent = el.dataset.a;
+  mcDayStage.textContent = el.dataset.d + ' · ' + el.dataset.s;
+  mcTime.textContent = el.dataset.t;
+  mcBtns.innerHTML = '';
+  const w1 = el.dataset.w1, w2 = el.dataset.w2;
+  if (w1 || w2) {
+    const div = document.createElement('div');
+    div.className = 'mc-btns';
+    if (w1) {
+      const a = document.createElement('a');
+      a.className = 'sl-btn'; a.href = w1; a.target = '_blank'; a.rel = 'noopener';
+      a.textContent = w2 ? 'W1 Setlist' : 'View Setlist';
+      div.appendChild(a);
+    }
+    if (w2) {
+      const a = document.createElement('a');
+      a.className = 'sl-btn secondary'; a.href = w2; a.target = '_blank'; a.rel = 'noopener';
+      a.textContent = 'W2 Setlist';
+      div.appendChild(a);
+    }
+    mcBtns.appendChild(div);
+  } else {
+    const p = document.createElement('div');
+    p.className = 'mc-no-setlist';
+    p.textContent = 'No setlist data found.';
+    mcBtns.appendChild(p);
+  }
+  overlay.classList.add('open');
+}
+
+document.querySelectorAll('.ab').forEach(el => el.addEventListener('click', () => openModal(el)));
+mcClose.addEventListener('click', () => overlay.classList.remove('open'));
+overlay.addEventListener('click', e => { if (e.target === overlay) overlay.classList.remove('open'); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape') overlay.classList.remove('open'); });
+</script>
+</body>
+</html>
