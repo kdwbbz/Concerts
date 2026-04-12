@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Coachella 2002 · Live Schedule</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#1A0800;--accent:#D4601A;--block-bg:rgba(212,96,26,0.12);--block-hover:rgba(212,96,26,0.22);--block-border:rgba(212,96,26,0.2);--time-col:rgba(212,96,26,0.65);--stage-bar-bg:#110500;--day-banner:#0D0400;--modal-bg:#1C0C00;}
+html{font-family:'Barlow Condensed',sans-serif;background:var(--bg);color:#fff;min-height:100vh}
+#year-nav{position:sticky;top:0;z-index:300;background:rgba(0,0,0,0.65);backdrop-filter:blur(10px);padding:7px 18px;display:flex;align-items:center;gap:6px;border-bottom:1px solid rgba(255,255,255,0.07);flex-wrap:wrap;}
+.ynl{font-size:9px;font-weight:700;letter-spacing:0.22em;text-transform:uppercase;color:rgba(255,255,255,0.3);margin-right:4px;}
+.yb{font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;padding:4px 14px;border-radius:20px;border:1px solid rgba(255,255,255,0.2);background:transparent;color:rgba(255,255,255,0.4);cursor:pointer;text-decoration:none;transition:all 0.15s;display:inline-block;}
+.yb:hover{color:rgba(255,255,255,0.9);border-color:rgba(255,255,255,0.5);}
+.yb.active{background:var(--accent);color:#111;border-color:var(--accent);}
+.ync{font-size:9px;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;color:rgba(255,255,255,0.18);margin-left:auto;}
+.day-nav{margin-left:12px;display:flex;gap:5px;}
+.dnb{font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;padding:3px 11px;border-radius:16px;border:1px solid rgba(255,255,255,0.15);background:transparent;color:rgba(255,255,255,0.35);cursor:pointer;text-decoration:none;transition:all 0.15s;display:inline-block;}
+.dnb:hover{color:rgba(255,255,255,0.75);border-color:rgba(255,255,255,0.35);}
+.hero{padding:36px 20px 28px;text-align:center;border-bottom:1px solid rgba(255,255,255,0.06);}
+.hero-label{font-size:10px;font-weight:700;letter-spacing:0.4em;text-transform:uppercase;opacity:0.4;margin-bottom:10px;}
+.hero-title{font-size:64px;font-weight:900;letter-spacing:0.06em;line-height:0.95;text-transform:uppercase;color:var(--accent);}
+.hero-sub{font-size:12px;font-weight:600;letter-spacing:0.28em;text-transform:uppercase;opacity:0.35;margin-top:10px;}
+.day-section{margin-bottom:4px;}
+.day-banner{background:var(--day-banner);padding:14px 20px 12px;display:flex;align-items:center;gap:16px;border-top:2px solid var(--accent);}
+.day-name{font-size:48px;font-weight:900;letter-spacing:0.08em;line-height:1;color:var(--accent);}
+.stage-bar{display:grid;background:var(--stage-bar-bg);border-bottom:1px solid rgba(255,255,255,0.08);position:sticky;top:37px;z-index:200;}
+.time-ph{}
+.sh{font-size:9px;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;color:var(--accent);padding:7px 8px;text-align:center;border-left:1px solid rgba(255,255,255,0.06);}
+.sched-grid{display:grid;grid-template-rows:repeat(96,14px);position:relative;}
+.hl{font-size:9px;font-weight:700;letter-spacing:0.04em;color:var(--time-col);padding-top:1px;padding-left:4px;display:flex;align-items:flex-start;gap:2px;white-space:nowrap;}
+.hl em{font-size:7px;font-style:normal;opacity:0.7;margin-top:1px;}
+.hline{border-top:1px solid rgba(255,255,255,0.05);}
+.ab{margin:1px;padding:4px 6px;border-radius:5px;background:var(--block-bg);border:1px solid var(--block-border);cursor:pointer;overflow:hidden;transition:background 0.1s,border-color 0.12s,transform 0.1s;display:flex;flex-direction:column;justify-content:flex-start;}
+.ab:hover{background:var(--block-hover);border-color:var(--accent);transform:scale(1.01);z-index:10;}
+.ab-name{font-size:12px;font-weight:800;line-height:1.1;color:#fff;margin-bottom:2px;}
+.ab-time{font-size:8px;font-weight:600;letter-spacing:0.05em;color:var(--time-col);opacity:0.8;}
+#modal-overlay{display:none;position:fixed;inset:0;z-index:500;background:rgba(0,0,0,0.6);backdrop-filter:blur(4px);align-items:center;justify-content:center;}
+#modal-overlay.open{display:flex;}
+#modal-card{background:var(--modal-bg);border:1px solid var(--accent);border-radius:12px;width:300px;max-width:90vw;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,0.5);}
+.mc-header{padding:20px 20px 14px;position:relative;}
+.mc-day-stage{font-size:9px;font-weight:700;letter-spacing:0.22em;text-transform:uppercase;color:var(--accent);opacity:0.8;margin-bottom:6px;}
+.mc-artist{font-size:26px;font-weight:900;line-height:1.05;}
+.mc-time{font-size:11px;font-weight:600;letter-spacing:0.08em;color:var(--accent);margin-top:6px;opacity:0.7;}
+.mc-divider{height:1px;background:rgba(255,255,255,0.08);margin:0 20px;}
+.mc-btns{padding:14px 20px 18px;display:flex;gap:8px;}
+.mc-close{position:absolute;top:14px;right:14px;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);color:#fff;font-size:12px;width:26px;height:26px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;font-family:sans-serif;transition:all 0.12s;}
+.mc-close:hover{background:rgba(255,255,255,0.2);}
+.sl-btn{font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;padding:8px 12px;border-radius:20px;text-decoration:none;flex:1;text-align:center;background:var(--accent);color:#111;border:none;cursor:pointer;transition:opacity 0.12s;}
+.sl-btn:hover{opacity:0.85;}
+.sl-btn.secondary{background:transparent;border:1px solid var(--accent);color:var(--accent);}
+.mc-no-setlist{font-size:11px;opacity:0.4;padding:14px 20px 18px;font-style:italic;}
+</style>
+</head>
+<body>
+<div id="year-nav">
+  <span class="ynl">Coachella</span>
+  <a class="yb" href="./coachella_2001.html">2001</a>
+  <a class="yb active" href="./coachella_2002.html">2002</a>
+  <a class="yb" href="./coachella_2013.html">2013</a>
+  <a class="yb" href="./coachella_2015.html">2015</a>
+  <a class="yb" href="./coachella_2016.html">2016</a>
+  <a class="yb" href="./index.html">2026</a>
+  <div class="day-nav"><a class="dnb" href="#saturday">Sat</a><a class="dnb" href="#sunday">Sun</a></div>
+  <span class="ync">Live Setlists</span>
+</div>
+<div class="hero">
+  <div class="hero-label">Coachella Valley Music &amp; Arts Festival</div>
+  <div class="hero-title">2002</div>
+  <div class="hero-sub">Click any act to view setlist on setlist.fm</div>
+</div>
+<section class="day-section" id="saturday">
+  <div class="day-banner"><span class="day-name">SATURDAY</span></div>
+  <div class="stage-bar" style="grid-template-columns:54px repeat(4,1fr)">
+    <div class="time-ph"></div><div class="sh">Coachella Stage</div><div class="sh">Outdoor Theatre</div><div class="sh">Mojave Tent</div><div class="sh">Sahara Tent</div>
+  </div>
+  <div class="sched-grid" style="grid-template-columns:54px repeat(4,1fr)">
+    <div class="hl" style="grid-column:1;grid-row:1">11<em>AM</em></div>
+<div class="hl" style="grid-column:1;grid-row:7">12<em>PM</em></div>
+<div class="hl" style="grid-column:1;grid-row:13">1<em>PM</em></div>
+<div class="hl" style="grid-column:1;grid-row:19">2<em>PM</em></div>
+<div class="hl" style="grid-column:1;grid-row:25">3<em>PM</em></div>
+<div class="hl" style="grid-column:1;grid-row:31">4<em>PM</em></div>
+<div class="hl" style="grid-column:1;grid-row:37">5<em>PM</em></div>
+<div class="hl" style="grid-column:1;grid-row:43">6<em>PM</em></div>
+<div class="hl" style="grid-column:1;grid-row:49">7<em>PM</em></div>
+<div class="hl" style="grid-column:1;grid-row:55">8<em>PM</em></div>
+<div class="hl" style="grid-column:1;grid-row:61">9<em>PM</em></div>
+<div class="hl" style="grid-column:1;grid-row:67">10<em>PM</em></div>
+<div class="hl" style="grid-column:1;grid-row:73">11<em>PM</em></div>
+<div class="hl" style="grid-column:1;grid-row:79">12<em>AM</em></div>
+<div class="hl" style="grid-column:1;grid-row:85">1<em>AM</em></div>
+    <div class="hline" style="grid-column:2;grid-row:1/2"></div>
+<div class="hline" style="grid-column:3;grid-row:1/2"></div>
+<div class="hline" style="grid-column:4;grid-row:1/2"></div>
+<div class="hline" style="grid-column:5;grid-row:1/2"></div>
+<div class="hline" style="grid-column:2;grid-row:7/8"></div>
+<div class="hline" style="grid-column:3;grid-row:7/8"></div>
+<div class="hline" style="grid-column:4;grid-row:7/8"></div>
+<div class="hline" style="grid-column:5;grid-row:7/8"></div>
+<div class="hline" style="grid-column:2;grid-row:13/14"></div>
+<div class="hline" style="grid-column:3;grid-row:13/14"></div>
+<div class="hline" style="grid-column:4;grid-row:13/14"></div>
+<div class="hline" style="grid-column:5;grid-row:13/14"></div>
+<div class="hline" style="grid-column:2;grid-row:19/20"></div>
+<div class="hline" style="grid-column:3;grid-row:19/20"></div>
+<div class="hline" style="grid-column:4;grid-row:19/20"></div>
+<div class="hline" style="grid-column:5;grid-row:19/20"></div>
+<div class="hline" style="grid-column:2;grid-row:25/26"></div>
+<div class="hline" style="grid-column:3;grid-row:25/26"></div>
+<div class="hline" style="grid-column:4;grid-row:25/26"></div>
+<div class="hline" style="grid-column:5;grid-row:25/26"></div>
+<div class="hline" style="grid-column:2;grid-row:31/32"></div>
+<div class="hline" style="grid-column:3;grid-row:31/32"></div>
+<div class="hline" style="grid-column:4;grid-row:31/32"></div>
+<div class="hline" style="grid-column:5;grid-row:31/32"></div>
+<div class="hline" style="grid-column:2;grid-row:37/38"></div>
+<div class="hline" style="grid-column:3;grid-row:37/38"></div>
+<div class="hline" style="grid-column:4;grid-row:37/38"></div>
+<div class="hline" style="grid-column:5;grid-row:37/38"></div>
+<div class="hline" style="grid-column:2;grid-row:43/44"></div>
+<div class="hline" style="grid-column:3;grid-row:43/44"></div>
+<div class="hline" style="grid-column:4;grid-row:43/44"></div>
+<div class="hline" style="grid-column:5;grid-row:43/44"></div>
+<div class="hline" style="grid-column:2;grid-row:49/50"></div>
+<div class="hline" style="grid-column:3;grid-row:49/50"></div>
+<div class="hline" style="grid-column:4;grid-row:49/50"></div>
+<div class="hline" style="grid-column:5;grid-row:49/50"></div>
+<div class="hline" style="grid-column:2;grid-row:55/56"></div>
+<div class="hline" style="grid-column:3;grid-row:55/56"></div>
+<div class="hline" style="grid-column:4;grid-row:55/56"></div>
+<div class="hline" style="grid-column:5;grid-row:55/56"></div>
+<div class="hline" style="grid-column:2;grid-row:61/62"></div>
+<div class="hline" style="grid-column:3;grid-row:61/62"></div>
+<div class="hline" style="grid-column:4;grid-row:61/62"></div>
+<div class="hline" style="grid-column:5;grid-row:61/62"></div>
+<div class="hline" style="grid-column:2;grid-row:67/68"></div>
+<div class="hline" style="grid-column:3;grid-row:67/68"></div>
+<div class="hline" style="grid-column:4;grid-row:67/68"></div>
+<div class="hline" style="grid-column:5;grid-row:67/68"></div>
+<div class="hline" style="grid-column:2;grid-row:73/74"></div>
+<div class="hline" style="grid-column:3;grid-row:73/74"></div>
+<div class="hline" style="grid-column:4;grid-row:73/74"></div>
+<div class="hline" style="grid-column:5;grid-row:73/74"></div>
+<div class="hline" style="grid-column:2;grid-row:79/80"></div>
+<div class="hline" style="grid-column:3;grid-row:79/80"></div>
+<div class="hline" style="grid-column:4;grid-row:79/80"></div>
+<div class="hline" style="grid-column:5;grid-row:79/80"></div>
+<div class="hline" style="grid-column:2;grid-row:85/86"></div>
+<div class="hline" style="grid-column:3;grid-row:85/86"></div>
+<div class="hline" style="grid-column:4;grid-row:85/86"></div>
+<div class="hline" style="grid-column:5;grid-row:85/86"></div>
+    <div class="ab" style="grid-column:2;grid-row:22/26" data-a="Vin Rock" data-s="Coachella Stage" data-t="2:30 PM – 3:15 PM" data-d="Saturday" data-w1="https://www.setlist.fm/setlist/vin-rock/2002/empire-polo-club-indio-ca-usa-339728e1.html" data-w2="https://www.setlist.fm/setlist/vin-rock/2002/empire-polo-club-indio-ca-usa-3b9728d4.html"><span class="ab-name">Vin Rock</span><span class="ab-time">2:30 PM – 3:15 PM</span></div><div class="ab" style="grid-column:2;grid-row:28/32" data-a="Princess Superstar" data-s="Coachella Stage" data-t="3:30 PM – 4:15 PM" data-d="Saturday" data-w1="https://www.setlist.fm/setlist/princess-superstar/2002/empire-polo-club-indio-ca-usa-3b9728e0.html" data-w2=""><span class="ab-name">Princess Superstar</span><span class="ab-time">3:30 PM – 4:15 PM</span></div><div class="ab" style="grid-column:2;grid-row:34/38" data-a="KRS-One" data-s="Coachella Stage" data-t="4:30 PM – 5:15 PM" data-d="Saturday" data-w1="https://www.setlist.fm/setlist/krsone/2002/empire-polo-club-indio-ca-usa-3bcadc04.html" data-w2=""><span class="ab-name">KRS-One</span><span class="ab-time">4:30 PM – 5:15 PM</span></div><div class="ab" style="grid-column:2;grid-row:40/44" data-a="Jack Johnson" data-s="Coachella Stage" data-t="5:30 PM – 6:15 PM" data-d="Saturday" data-w1="https://www.setlist.fm/setlist/jack-johnson/2002/empire-polo-club-indio-ca-usa-3cce933.html" data-w2=""><span class="ab-name">Jack Johnson</span><span class="ab-time">5:30 PM – 6:15 PM</span></div><div class="ab" style="grid-column:2;grid-row:46/50" data-a="Pete Yorn" data-s="Coachella Stage" data-t="6:30 PM – 7:15 PM" data-d="Saturday" data-w1="https://www.setlist.fm/setlist/pete-yorn/2002/empire-polo-club-indio-ca-usa-1bcce93c.html" data-w2=""><span class="ab-name">Pete Yorn</span><span class="ab-time">6:30 PM – 7:15 PM</span></div><div class="ab" style="grid-column:2;grid-row:52/58" data-a="Siouxsie and the Banshees" data-s="Coachella Stage" data-t="7:30 PM – 8:30 PM" data-d="Saturday" data-w1="https://www.setlist.fm/setlist/siouxsie-and-the-banshees/2002/empire-polo-club-indio-ca-usa-23d7c0eb.html" data-w2=""><span class="ab-name">Siouxsie and the Banshees</span><span class="ab-time">7:30 PM – 8:30 PM</span></div><div class="ab" style="grid-column:2;grid-row:59/67" data-a="The Chemical Brothers" data-s="Coachella Stage" data-t="8:45 PM – 10:00 PM" data-d="Saturday" data-w1="https://www.setlist.fm/setlist/the-chemical-brothers/2002/empire-polo-club-indio-ca-usa-3bd17cc8.html" data-w2=""><span class="ab-name">The Chemical Brothers</span><span class="ab-time">8:45 PM – 10:00 PM</span></div><div class="ab" style="grid-column:2;grid-row:70/79" data-a="Björk" data-s="Coachella Stage" data-t="10:30 PM – 12:00 AM" data-d="Saturday" data-w1="https://www.setlist.fm/setlist/bjork/2002/empire-polo-club-indio-ca-usa-23d690fb.html" data-w2=""><span class="ab-name">Björk</span><span class="ab-time">10:30 PM – 12:00 AM</span></div><div class="ab" style="grid-column:3;grid-row:26/31" data-a="Saul Williams" data-s="Outdoor Theatre" data-t="3:15 PM – 4:00 PM" data-d="Saturday" data-w1="https://www.setlist.fm/setlist/saul-williams/2002/empire-polo-club-indio-ca-usa-339728e5.html" data-w2=""><span class="ab-name">Saul Williams</span><span class="ab-time">3:15 PM – 4:00 PM</span></div><div class="ab" style="grid-column:3;grid-row:31/35" data-a="Citizen Cope" data-s="Outdoor Theatre" data-t="4:00 PM – 4:45 PM" data-d="Saturday" data-w1="https://www.setlist.fm/setlist/citizen-cope/2002/empire-polo-club-indio-ca-usa-239728db.html" data-w2=""><span class="ab-name">Citizen Cope</span><span class="ab-time">4:00 PM – 4:45 PM</span></div><div class="ab" style="grid-column:3;grid-row:35/40" data-a="Folk Implosion" data-s="Outdoor Theatre" data-t="4:45 PM – 5:30 PM" data-d="Saturday" data-w1="https://www.setlist.fm/setlist/the-folk-implosion/2002/empire-polo-club-indio-ca-usa-3b9728e4.html" data-w2=""><span class="ab-name">Folk Implosion</span><span class="ab-time">4:45 PM – 5:30 PM</span></div><div class="ab" style="grid-column:3;grid-row:40/44" data-a="Cornershop" data-s="Outdoor Theatre" data-t="5:30 PM – 6:15 PM" data-d="Saturday" data-w1="https://www.setlist.fm/setlist/cornershop/2002/empire-polo-club-indio-ca-usa-33d17ccd.html" data-w2=""><span class="ab-name">Cornershop</span><span class="ab-time">5:30 PM – 6:15 PM</span></div><div class="ab" style="grid-column:3;grid-row:44/49" data-a="The Charlatans" data-s="Outdoor Theatre" data-t="6:15 PM – 7:00 PM" data-d="Saturday" data-w1="https://www.setlist.fm/setlist/the-charlatans/2002/empire-polo-club-indio-ca-usa-33d158f5.html" data-w2=""><span class="ab-name">The Charlatans</span><span class="ab-time">6:15 PM – 7:00 PM</span></div><div class="ab" style="grid-column:3;grid-row:49/55" data-a="Queens of the Stone Age" data-s="Outdoor Theatre" data-t="7:00 PM – 8:00 PM" data-d="Saturday" data-w1="https://www.setlist.fm/setlist/queens-of-the-stone-age/2002/empire-polo-club-indio-ca-usa-23d588ef.html" data-w2=""><span class="ab-name">Queens of the Stone Age</span><span class="ab-time">7:00 PM – 8:00 PM</span></div><div class="ab" style="grid-column:3;grid-row:56/62" data-a="Jurassic 5" data-s="Outdoor Theatre" data-t="8:15 PM – 9:15 PM" data-d="Saturday" data-w1="https://www.setlist.fm/setlist/jurassic-5/2002/empire-polo-club-indio-ca-usa-33cadc05.html" data-w2=""><span class="ab-name">Jurassic 5</span><span class="ab-time">8:15 PM – 9:15 PM</span></div><div class="ab" style="grid-column:3;grid-row:64/71" data-a="Cake" data-s="Outdoor Theatre" data-t="9:30 PM – 10:45 PM" data-d="Saturday" data-w1="https://www.setlist.fm/setlist/cake/2002/empire-polo-club-indio-ca-usa-2bcadc06.html" data-w2=""><span class="ab-name">Cake</span><span class="ab-time">9:30 PM – 10:45 PM</span></div><div class="ab" style="grid-column:4;grid-row:43/47" data-a="The Pharcyde" data-s="Mojave Tent" data-t="6:00 PM – 6:45 PM" data-d="Saturday" data-w1="https://www.setlist.fm/setlist/the-pharcyde/2002/empire-polo-club-indio-ca-usa-239728df.html" data-w2=""><span class="ab-name">The Pharcyde</span><span class="ab-time">6:00 PM – 6:45 PM</span></div><div class="ab" style="grid-column:4;grid-row:49/53" data-a="Kosheen" data-s="Mojave Tent" data-t="7:00 PM – 7:45 PM" data-d="Saturday" data-w1="https://www.setlist.fm/setlist/kosheen/2002/empire-polo-club-indio-ca-usa-2b9728de.html" data-w2=""><span class="ab-name">Kosheen</span><span class="ab-time">7:00 PM – 7:45 PM</span></div><div class="ab" style="grid-column:4;grid-row:55/61" data-a="Dan the Automator" data-s="Mojave Tent" data-t="8:00 PM – 9:00 PM" data-d="Saturday" data-w1="https://www.setlist.fm/setlist/dan-the-automator/2002/empire-polo-club-indio-ca-usa-23cadcfb.html" data-w2=""><span class="ab-name">Dan the Automator</span><span class="ab-time">8:00 PM – 9:00 PM</span></div><div class="ab" style="grid-column:4;grid-row:62/68" data-a="Z-Trip" data-s="Mojave Tent" data-t="9:15 PM – 10:15 PM" data-d="Saturday" data-w1="https://www.setlist.fm/setlist/ztrip/2002/empire-polo-club-indio-ca-usa-3b9728dc.html" data-w2=""><span class="ab-name">Z-Trip</span><span class="ab-time">9:15 PM – 10:15 PM</span></div><div class="ab" style="grid-column:4;grid-row:70/76" data-a="The Vines" data-s="Mojave Tent" data-t="10:30 PM – 11:30 PM" data-d="Saturday" data-w1="https://www.setlist.fm/setlist/the-vines/2002/empire-polo-club-indio-ca-usa-13cce93d.html" data-w2=""><span class="ab-name">The Vines</span><span class="ab-time">10:30 PM – 11:30 PM</span></div>
+  </div>
+</section>
+<section class="day-section" id="sunday">
+  <div class="day-banner"><span class="day-name">SUNDAY</span></div>
+  <div class="stage-bar" style="grid-template-columns:54px repeat(4,1fr)">
+    <div class="time-ph"></div><div class="sh">Coachella Stage</div><div class="sh">Outdoor Theatre</div><div class="sh">Mojave Tent</div><div class="sh">Sahara Tent</div>
+  </div>
+  <div class="sched-grid" style="grid-template-columns:54px repeat(4,1fr)">
+    <div class="hl" style="grid-column:1;grid-row:1">11<em>AM</em></div>
+<div class="hl" style="grid-column:1;grid-row:7">12<em>PM</em></div>
+<div class="hl" style="grid-column:1;grid-row:13">1<em>PM</em></div>
+<div class="hl" style="grid-column:1;grid-row:19">2<em>PM</em></div>
+<div class="hl" style="grid-column:1;grid-row:25">3<em>PM</em></div>
+<div class="hl" style="grid-column:1;grid-row:31">4<em>PM</em></div>
+<div class="hl" style="grid-column:1;grid-row:37">5<em>PM</em></div>
+<div class="hl" style="grid-column:1;grid-row:43">6<em>PM</em></div>
+<div class="hl" style="grid-column:1;grid-row:49">7<em>PM</em></div>
+<div class="hl" style="grid-column:1;grid-row:55">8<em>PM</em></div>
+<div class="hl" style="grid-column:1;grid-row:61">9<em>PM</em></div>
+<div class="hl" style="grid-column:1;grid-row:67">10<em>PM</em></div>
+<div class="hl" style="grid-column:1;grid-row:73">11<em>PM</em></div>
+<div class="hl" style="grid-column:1;grid-row:79">12<em>AM</em></div>
+<div class="hl" style="grid-column:1;grid-row:85">1<em>AM</em></div>
+    <div class="hline" style="grid-column:2;grid-row:1/2"></div>
+<div class="hline" style="grid-column:3;grid-row:1/2"></div>
+<div class="hline" style="grid-column:4;grid-row:1/2"></div>
+<div class="hline" style="grid-column:5;grid-row:1/2"></div>
+<div class="hline" style="grid-column:2;grid-row:7/8"></div>
+<div class="hline" style="grid-column:3;grid-row:7/8"></div>
+<div class="hline" style="grid-column:4;grid-row:7/8"></div>
+<div class="hline" style="grid-column:5;grid-row:7/8"></div>
+<div class="hline" style="grid-column:2;grid-row:13/14"></div>
+<div class="hline" style="grid-column:3;grid-row:13/14"></div>
+<div class="hline" style="grid-column:4;grid-row:13/14"></div>
+<div class="hline" style="grid-column:5;grid-row:13/14"></div>
+<div class="hline" style="grid-column:2;grid-row:19/20"></div>
+<div class="hline" style="grid-column:3;grid-row:19/20"></div>
+<div class="hline" style="grid-column:4;grid-row:19/20"></div>
+<div class="hline" style="grid-column:5;grid-row:19/20"></div>
+<div class="hline" style="grid-column:2;grid-row:25/26"></div>
+<div class="hline" style="grid-column:3;grid-row:25/26"></div>
+<div class="hline" style="grid-column:4;grid-row:25/26"></div>
+<div class="hline" style="grid-column:5;grid-row:25/26"></div>
+<div class="hline" style="grid-column:2;grid-row:31/32"></div>
+<div class="hline" style="grid-column:3;grid-row:31/32"></div>
+<div class="hline" style="grid-column:4;grid-row:31/32"></div>
+<div class="hline" style="grid-column:5;grid-row:31/32"></div>
+<div class="hline" style="grid-column:2;grid-row:37/38"></div>
+<div class="hline" style="grid-column:3;grid-row:37/38"></div>
+<div class="hline" style="grid-column:4;grid-row:37/38"></div>
+<div class="hline" style="grid-column:5;grid-row:37/38"></div>
+<div class="hline" style="grid-column:2;grid-row:43/44"></div>
+<div class="hline" style="grid-column:3;grid-row:43/44"></div>
+<div class="hline" style="grid-column:4;grid-row:43/44"></div>
+<div class="hline" style="grid-column:5;grid-row:43/44"></div>
+<div class="hline" style="grid-column:2;grid-row:49/50"></div>
+<div class="hline" style="grid-column:3;grid-row:49/50"></div>
+<div class="hline" style="grid-column:4;grid-row:49/50"></div>
+<div class="hline" style="grid-column:5;grid-row:49/50"></div>
+<div class="hline" style="grid-column:2;grid-row:55/56"></div>
+<div class="hline" style="grid-column:3;grid-row:55/56"></div>
+<div class="hline" style="grid-column:4;grid-row:55/56"></div>
+<div class="hline" style="grid-column:5;grid-row:55/56"></div>
+<div class="hline" style="grid-column:2;grid-row:61/62"></div>
+<div class="hline" style="grid-column:3;grid-row:61/62"></div>
+<div class="hline" style="grid-column:4;grid-row:61/62"></div>
+<div class="hline" style="grid-column:5;grid-row:61/62"></div>
+<div class="hline" style="grid-column:2;grid-row:67/68"></div>
+<div class="hline" style="grid-column:3;grid-row:67/68"></div>
+<div class="hline" style="grid-column:4;grid-row:67/68"></div>
+<div class="hline" style="grid-column:5;grid-row:67/68"></div>
+<div class="hline" style="grid-column:2;grid-row:73/74"></div>
+<div class="hline" style="grid-column:3;grid-row:73/74"></div>
+<div class="hline" style="grid-column:4;grid-row:73/74"></div>
+<div class="hline" style="grid-column:5;grid-row:73/74"></div>
+<div class="hline" style="grid-column:2;grid-row:79/80"></div>
+<div class="hline" style="grid-column:3;grid-row:79/80"></div>
+<div class="hline" style="grid-column:4;grid-row:79/80"></div>
+<div class="hline" style="grid-column:5;grid-row:79/80"></div>
+<div class="hline" style="grid-column:2;grid-row:85/86"></div>
+<div class="hline" style="grid-column:3;grid-row:85/86"></div>
+<div class="hline" style="grid-column:4;grid-row:85/86"></div>
+<div class="hline" style="grid-column:5;grid-row:85/86"></div>
+    <div class="ab" style="grid-column:2;grid-row:26/31" data-a="Ozomatli" data-s="Coachella Stage" data-t="3:15 PM – 4:00 PM" data-d="Sunday" data-w1="https://www.setlist.fm/setlist/ozomatli/2002/empire-polo-club-indio-ca-usa-2b9728ca.html" data-w2=""><span class="ab-name">Ozomatli</span><span class="ab-time">3:15 PM – 4:00 PM</span></div><div class="ab" style="grid-column:2;grid-row:32/37" data-a="Mos Def" data-s="Coachella Stage" data-t="4:15 PM – 5:00 PM" data-d="Sunday" data-w1="https://www.setlist.fm/setlist/mos-def/2002/empire-polo-club-indio-ca-usa-6bf53e66.html" data-w2=""><span class="ab-name">Mos Def</span><span class="ab-time">4:15 PM – 5:00 PM</span></div><div class="ab" style="grid-column:2;grid-row:40/46" data-a="The Strokes" data-s="Coachella Stage" data-t="5:30 PM – 6:30 PM" data-d="Sunday" data-w1="https://www.setlist.fm/setlist/the-strokes/2002/empire-polo-club-indio-ca-usa-5bd60bbc.html" data-w2=""><span class="ab-name">The Strokes</span><span class="ab-time">5:30 PM – 6:30 PM</span></div><div class="ab" style="grid-column:2;grid-row:49/56" data-a="Foo Fighters" data-s="Coachella Stage" data-t="7:00 PM – 8:15 PM" data-d="Sunday" data-w1="https://www.setlist.fm/setlist/foo-fighters/2002/empire-polo-club-indio-ca-usa-3d3919b.html" data-w2=""><span class="ab-name">Foo Fighters</span><span class="ab-time">7:00 PM – 8:15 PM</span></div><div class="ab" style="grid-column:2;grid-row:59/67" data-a="The Prodigy" data-s="Coachella Stage" data-t="8:45 PM – 10:00 PM" data-d="Sunday" data-w1="https://www.setlist.fm/setlist/the-prodigy/2002/empire-polo-club-indio-ca-usa-33d17cc9.html" data-w2=""><span class="ab-name">The Prodigy</span><span class="ab-time">8:45 PM – 10:00 PM</span></div><div class="ab" style="grid-column:2;grid-row:70/79" data-a="Oasis" data-s="Coachella Stage" data-t="10:30 PM – 12:00 AM" data-d="Sunday" data-w1="https://www.setlist.fm/setlist/oasis/2002/empire-polo-club-indio-ca-usa-13d2dd31.html" data-w2=""><span class="ab-name">Oasis</span><span class="ab-time">10:30 PM – 12:00 AM</span></div><div class="ab" style="grid-column:3;grid-row:34/38" data-a="Elbow" data-s="Outdoor Theatre" data-t="4:30 PM – 5:15 PM" data-d="Sunday" data-w1="https://www.setlist.fm/setlist/elbow/2002/empire-polo-club-indio-ca-usa-2bd17cce.html" data-w2=""><span class="ab-name">Elbow</span><span class="ab-time">4:30 PM – 5:15 PM</span></div><div class="ab" style="grid-column:3;grid-row:40/44" data-a="Dilated Peoples" data-s="Outdoor Theatre" data-t="5:30 PM – 6:15 PM" data-d="Sunday" data-w1="https://www.setlist.fm/setlist/dilated-peoples/2002/empire-polo-club-indio-ca-usa-239728cf.html" data-w2=""><span class="ab-name">Dilated Peoples</span><span class="ab-time">5:30 PM – 6:15 PM</span></div><div class="ab" style="grid-column:3;grid-row:46/50" data-a="Blonde Redhead" data-s="Outdoor Theatre" data-t="6:30 PM – 7:15 PM" data-d="Sunday" data-w1="https://www.setlist.fm/setlist/blonde-redhead/2002/empire-polo-club-indio-ca-usa-3b9728c8.html" data-w2=""><span class="ab-name">Blonde Redhead</span><span class="ab-time">6:30 PM – 7:15 PM</span></div><div class="ab" style="grid-column:3;grid-row:53/59" data-a="Belle and Sebastian" data-s="Outdoor Theatre" data-t="7:45 PM – 8:45 PM" data-d="Sunday" data-w1="https://www.setlist.fm/setlist/belle-and-sebastian/2002/empire-polo-club-indio-ca-usa-23d17ccf.html" data-w2=""><span class="ab-name">Belle and Sebastian</span><span class="ab-time">7:45 PM – 8:45 PM</span></div><div class="ab" style="grid-column:3;grid-row:62/68" data-a="Galactic" data-s="Outdoor Theatre" data-t="9:15 PM – 10:15 PM" data-d="Sunday" data-w1="https://www.setlist.fm/setlist/galactic/2002/empire-polo-club-indio-ca-usa-339728b9.html" data-w2=""><span class="ab-name">Galactic</span><span class="ab-time">9:15 PM – 10:15 PM</span></div><div class="ab" style="grid-column:5;grid-row:43/49" data-a="Mix Master Mike" data-s="Sahara Tent" data-t="6:00 PM – 7:00 PM" data-d="Sunday" data-w1="https://www.setlist.fm/setlist/mix-master-mike/2002/empire-polo-club-indio-ca-usa-239728cb.html" data-w2=""><span class="ab-name">Mix Master Mike</span><span class="ab-time">6:00 PM – 7:00 PM</span></div><div class="ab" style="grid-column:5;grid-row:50/56" data-a="Bad Boy Bill" data-s="Sahara Tent" data-t="7:15 PM – 8:15 PM" data-d="Sunday" data-w1="https://www.setlist.fm/setlist/bad-boy-bill/2002/empire-polo-club-indio-ca-usa-2b9728be.html" data-w2=""><span class="ab-name">Bad Boy Bill</span><span class="ab-time">7:15 PM – 8:15 PM</span></div><div class="ab" style="grid-column:5;grid-row:58/65" data-a="BT" data-s="Sahara Tent" data-t="8:30 PM – 9:45 PM" data-d="Sunday" data-w1="https://www.setlist.fm/setlist/bt/2002/empire-polo-club-indio-ca-usa-239728b7.html" data-w2=""><span class="ab-name">BT</span><span class="ab-time">8:30 PM – 9:45 PM</span></div><div class="ab" style="grid-column:5;grid-row:67/76" data-a="Paul Oakenfold" data-s="Sahara Tent" data-t="10:00 PM – 11:30 PM" data-d="Sunday" data-w1="https://www.setlist.fm/setlist/paul-oakenfold/2002/empire-polo-club-indio-ca-usa-2b9728b2.html" data-w2=""><span class="ab-name">Paul Oakenfold</span><span class="ab-time">10:00 PM – 11:30 PM</span></div>
+  </div>
+</section>
+<div id="modal-overlay">
+  <div id="modal-card">
+    <div class="mc-header">
+      <div class="mc-day-stage" id="mc-daystage"></div>
+      <div class="mc-artist" id="mc-artist"></div>
+      <div class="mc-time" id="mc-time"></div>
+      <button class="mc-close" id="mc-close">✕</button>
+    </div>
+    <div class="mc-divider"></div>
+    <div id="mc-btns-area"></div>
+  </div>
+</div>
+<script>
+const overlay=document.getElementById('modal-overlay');
+const mcClose=document.getElementById('mc-close');
+const mcArtist=document.getElementById('mc-artist');
+const mcDayStage=document.getElementById('mc-daystage');
+const mcTime=document.getElementById('mc-time');
+const mcBtns=document.getElementById('mc-btns-area');
+function openModal(el){
+  mcArtist.textContent=el.dataset.a;
+  mcDayStage.textContent=el.dataset.d+' · '+el.dataset.s;
+  mcTime.textContent=el.dataset.t;
+  mcBtns.innerHTML='';
+  const w1=el.dataset.w1,w2=el.dataset.w2;
+  if(w1||w2){
+    const div=document.createElement('div');div.className='mc-btns';
+    if(w1){const a=document.createElement('a');a.className='sl-btn';a.href=w1;a.target='_blank';a.rel='noopener';a.textContent=w2?'W1 Setlist':'View Setlist';div.appendChild(a);}
+    if(w2){const a=document.createElement('a');a.className='sl-btn secondary';a.href=w2;a.target='_blank';a.rel='noopener';a.textContent='W2 Setlist';div.appendChild(a);}
+    mcBtns.appendChild(div);
+  }else{const p=document.createElement('div');p.className='mc-no-setlist';p.textContent='No setlist data found.';mcBtns.appendChild(p);}
+  overlay.classList.add('open');
+}
+document.querySelectorAll('.ab').forEach(el=>el.addEventListener('click',()=>openModal(el)));
+mcClose.addEventListener('click',()=>overlay.classList.remove('open'));
+overlay.addEventListener('click',e=>{if(e.target===overlay)overlay.classList.remove('open');});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')overlay.classList.remove('open');});
+</script>
+</body>
+</html>
